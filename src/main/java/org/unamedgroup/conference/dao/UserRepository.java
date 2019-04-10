@@ -18,7 +18,7 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     /**
      * 根据用户ID返回用户实体
      *
-     * @param userId
+     * @param userId 用户ID
      * @return 用户实体
      */
     User getUserByUserID(Integer userId);
@@ -30,4 +30,12 @@ public interface UserRepository extends CrudRepository<User, Integer> {
      */
     @Override
     List<User> findAll();
+
+    /**
+     * 根据用户的提交的手机号返回用户实体
+     *
+     * @param phoneNumber 用户手机号
+     * @return 用户实体
+     */
+    User getUserByPhoneNumber(String phoneNumber);
 }
