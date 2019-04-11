@@ -8,6 +8,9 @@ import org.unamedgroup.conference.dao.ConferenceRepository;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
+import org.unamedgroup.conference.service.MyConferenceService;
+
+import java.util.List;
 
 /**
  * 错误代码使用3xxx
@@ -23,6 +26,8 @@ public class ConferenceController {
 
     @Autowired
     ConferenceRepository conferenceRepository;
+    @Autowired
+    MyConferenceService myConferenceService;
 
     /**
      * 预定会议
@@ -59,5 +64,10 @@ public class ConferenceController {
             System.err.println(e.toString());
             return new FailureInfo(3100, "预定会议出现未知错误，详情：" + e.toString());
         }
+    }
+
+    @GetMapping(value = "/details")
+    public List<Conference> getDetatils(Integer userId) {
+        return myConferenceService.getMyConferenceList(userId);
     }
 }

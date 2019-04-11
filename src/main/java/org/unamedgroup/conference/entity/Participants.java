@@ -16,7 +16,8 @@ import javax.persistence.*;
 @Table(name = "participant")
 public class Participants {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="ROWID")
+    private String rowId;
     private Integer sequenceID;
     private Integer userID;
 }
