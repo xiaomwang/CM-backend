@@ -1,6 +1,5 @@
 package org.unamedgroup.conference.controller;
 
-import com.auth0.jwt.JWT;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,15 +9,14 @@ import org.unamedgroup.conference.dao.UserRepository;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.User;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
-import org.unamedgroup.conference.entity.temp.Info;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.security.JWTUtil;
-import org.unamedgroup.conference.security.UnauthorizedException;
 
 import java.util.List;
 
 /**
  * UserController
+ * 错误代码使用7xxx
  *
  * @author liumengxiao
  * @date 2019/03/12
@@ -53,38 +51,31 @@ public class UserController {
     @ResponseBody
     public Object login(String phoneNumber, String password) {
         try {
-            Info info = null;
             User user = userRepository.getUserByPhoneNumber(phoneNumber);
             if (user == null) {
-                info = new FailureInfo("用户名不存在！");
-                return info;
+                return new FailureInfo(-1, "用户名不存在！");
             }
             //用户名密码是否匹配
             if (password.equals(user.getPassword())) {
                 String token = JWTUtil.generateToken(phoneNumber, user.getPasswordHash());
-                info = new SuccessInfo(token);
-                return info;
+                return new SuccessInfo(token);
             } else {
-                info = new FailureInfo("用户名密码不匹配！");
-                return info;
+                return new FailureInfo(-1, "用户名密码不匹配！");
             }
         } catch (Exception e) {
             System.err.println("用户名密码验证出现异常！详细信息：");
             System.err.println(e.toString());
         }
-        return new FailureInfo("用户名密码验证出现异常！");
+        return new FailureInfo();
     }
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     @ResponseBody
-    public Info test() {
-        Info info = null;
+    public Object test() {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated() == false) {
-            info = new FailureInfo("用户登录失败！");
-            return info;
+            return new FailureInfo();
         }
-        info = new SuccessInfo("success!");
-        return info;
+        return new SuccessInfo("success!");
     }
 }

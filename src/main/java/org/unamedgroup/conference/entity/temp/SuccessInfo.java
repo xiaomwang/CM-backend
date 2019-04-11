@@ -10,11 +10,12 @@ import lombok.Data;
  */
 
 @Data
-public class SuccessInfo extends Info {
+public class SuccessInfo {
+    private Integer status;
     private Object data;
 
     public SuccessInfo(Object data) {
-        super(0);
+        status = 0;
         this.data = data;
     }
 }
