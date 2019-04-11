@@ -47,4 +47,10 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
 
     List<Conference> findByRoomAndEndTimeBetweenAndStartTimeBefore(Integer id, Date start, Date end, Date date);
 
+    /**
+     * 根据参与者序列号ID查询会议信息
+     * @param participantSequence 参与者序列号
+     * @return 会议信息
+     */
+    Conference getConferenceByParticipantSequence(Integer participantSequence);
 }

@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.unamedgroup.conference.dao.ConferenceRepository;
 import org.unamedgroup.conference.entity.Conference;
+import org.unamedgroup.conference.service.MyConferenceService;
+
+import java.util.List;
 
 /**
  * @Author: 白振宇
@@ -17,6 +20,8 @@ public class ConferenceController {
 
     @Autowired
     ConferenceRepository conferenceRepository;
+    @Autowired
+    MyConferenceService myConferenceService;
 
     /**
      * 预定会议
@@ -51,5 +56,10 @@ public class ConferenceController {
         }
 //        return status;
         return conference;
+    }
+
+    @GetMapping(value = "/details")
+    public List<Conference> getDetatils(Integer userId) {
+        return myConferenceService.getMyConferenceList(userId);
     }
 }
