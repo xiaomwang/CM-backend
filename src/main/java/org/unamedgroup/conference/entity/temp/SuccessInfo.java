@@ -11,9 +11,9 @@ import lombok.Data;
 
 @Data
 public class SuccessInfo extends Info {
-    private String data;
+    private Object data;
 
-    public SuccessInfo(String data) {
+    public SuccessInfo(Object data) {
         super(0);
         this.data = data;
     }

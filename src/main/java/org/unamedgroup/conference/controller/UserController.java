@@ -11,6 +11,7 @@ import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.User;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.Info;
+import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.security.JWTUtil;
 import org.unamedgroup.conference.security.UnauthorizedException;
 
@@ -52,29 +53,38 @@ public class UserController {
     @ResponseBody
     public Object login(String phoneNumber, String password) {
         try {
+            Info info = null;
             User user = userRepository.getUserByPhoneNumber(phoneNumber);
+            if (user == null) {
+                info = new FailureInfo("用户名不存在！");
+                return info;
+            }
             //用户名密码是否匹配
             if (password.equals(user.getPassword())) {
                 String token = JWTUtil.generateToken(phoneNumber, user.getPasswordHash());
-                return token;
+                info = new SuccessInfo(token);
+                return info;
             } else {
-                Info info = new FailureInfo("用户名密码不匹配！");
+                info = new FailureInfo("用户名密码不匹配！");
                 return info;
             }
         } catch (Exception e) {
             System.err.println("用户名密码验证出现异常！详细信息：");
             System.err.println(e.toString());
         }
-        return null;
+        return new FailureInfo("用户名密码验证出现异常！");
     }
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     @ResponseBody
-    public String test() {
+    public Info test() {
+        Info info = null;
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated() == false) {
-            throw new UnauthorizedException();
+            info = new FailureInfo("用户登录失败！");
+            return info;
         }
-        return "success";
+        info = new SuccessInfo("success!");
+        return info;
     }
 }
