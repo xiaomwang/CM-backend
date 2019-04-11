@@ -41,4 +41,19 @@ public class User {
         this.userGroup = userGroup;
         this.feature = feature;
     }
+
+    public String getPasswordHash() {
+        try {
+            if (password != null) {
+                Integer passwordHash = password.hashCode();
+                return passwordHash.toString();
+            } else {
+                throw new NullPointerException();
+            }
+        } catch (Exception e) {
+            System.err.println("密码进行HASH运算时候遇到问题，请检查。");
+            System.err.println(e.toString());
+        }
+        return null;
+    }
 }
