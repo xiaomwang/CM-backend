@@ -13,6 +13,7 @@ import java.io.InputStream;
 
 /**
  * BioFeatureController
+ * 错误代码使用1xxx
  *
  * @author zhoutao
  * @date 2019/03/29
@@ -27,6 +28,7 @@ public class BioFeatureController {
 
     /**
      * 人脸获取
+     *
      * @param imgStr
      * @param userID
      * @return
@@ -51,6 +53,7 @@ public class BioFeatureController {
 
     /**
      * 人脸匹配
+     *
      * @param imgStr
      * @param userID
      * @return result

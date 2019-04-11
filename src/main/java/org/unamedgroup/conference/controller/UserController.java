@@ -35,16 +35,22 @@ public class UserController {
 
     @RequestMapping(value = "/myConferences", method = RequestMethod.GET)
     @ResponseBody
-    public List<Conference> getMyConferences(Integer userID) {
+    public Object getMyConferences(Integer userID) {
+        //登录有效性验证
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+
         List<Conference> myConferences;
         try {
             myConferences = conferenceRepository.getConferencesByUser(userID);
-            return myConferences;
+            return new SuccessInfo(myConferences);
         } catch (Exception e) {
             System.err.println("根据用户信息获取会议信息错误，请核实。详细信息：");
             System.err.println(e.toString());
+            return new FailureInfo(7000, "根据用户信息获取会议信息错误，请核实!");
         }
-        return null;
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
