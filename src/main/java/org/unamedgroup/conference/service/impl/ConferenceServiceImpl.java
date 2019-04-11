@@ -1,0 +1,48 @@
+package org.unamedgroup.conference.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.unamedgroup.conference.dao.ConferenceRepository;
+import org.unamedgroup.conference.dao.ParticipantsRepository;
+import org.unamedgroup.conference.entity.Conference;
+import org.unamedgroup.conference.entity.Participants;
+import org.unamedgroup.conference.service.MyConferenceService;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @Author: 白振宇
+ * @Date： 2019/4/11 8:43
+ */
+@Service
+public class ConferenceServiceImpl implements MyConferenceService {
+    @Autowired
+    ConferenceRepository conferenceRepository;
+    @Autowired
+    ParticipantsRepository participantsRepository;
+
+    @Override
+    public List<Conference> getConferencesByProposer(int userId) {
+        return conferenceRepository.getConferencesByUser(userId);
+    }
+
+    @Override
+    public List<Conference> getConferencesByParticipant(int userId) {
+        List<Conference> conferenceList = new ArrayList<>();
+        List<Participants> participants = participantsRepository.findByUserID(userId);
+        for(Participants participant : participants) {
+            conferenceList.add(conferenceRepository.getConferenceByParticipantSequence(participant.getSequenceID()));
+        }
+        return conferenceList;
+    }
+
+    @Override
+    public List<Conference> getMyConferenceList(int userId) {
+        List<Conference> conferenceList = getConferencesByProposer(userId);
+        if(getConferencesByParticipant(userId)!=null) {
+            conferenceList.addAll(conferenceList.size(),getConferencesByParticipant(userId));
+        }
+        return conferenceList;
+    }
+}
