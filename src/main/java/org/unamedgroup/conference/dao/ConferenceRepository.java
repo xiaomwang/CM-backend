@@ -14,7 +14,15 @@ import java.util.List;
  */
 @Repository
 public interface ConferenceRepository extends CrudRepository<Conference, Integer> {
-    List<Conference> findByRoomAndStartTimeBetween(Integer id, Date start, Date end);
+    /**
+     * 根据开始日期和会议状态以及会议室ID查找所有会议
+     * @param id 会议室ID
+     * @param status 会议状态
+     * @param start 开始时间
+     * @param end 结束时间
+     * @return 返回会议列表
+     */
+    List<Conference> findByRoomAndStatusAndStartTimeBetween(Integer id, Integer status, Date start, Date end);
 
     @Override
     Conference save(Conference conference);
@@ -45,7 +53,16 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
      */
     List<Conference> getConferencesByUser(Integer user);
 
-    List<Conference> findByRoomAndEndTimeBetweenAndStartTimeBefore(Integer id, Date start, Date end, Date date);
+    /**
+     * 根据结束日期和会议状态以及会议室ID查找所有会议
+     * @param id 会议室ID
+     * @param status 会议状态
+     * @param start 开始时间
+     * @param end 结束时间
+     * @param date 当前日期
+     * @return 会议列表
+     */
+    List<Conference> findByRoomAndStatusAndEndTimeBetweenAndStartTimeBefore(Integer id, Integer status, Date start, Date end, Date date);
 
     /**
      * 根据参与者序列号ID查询会议信息

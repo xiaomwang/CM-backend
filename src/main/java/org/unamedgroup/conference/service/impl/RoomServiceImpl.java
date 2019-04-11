@@ -114,8 +114,8 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService {
         Map<Room, List<Conference>> mapStart = new HashMap<>(16);
         Map<Room, List<Conference>> mapEnd = new HashMap<>(16);
         for (Room room : getConferenceList(buildingId, roomId)) {
-            mapStart.put(room, conferenceRepository.findByRoomAndStartTimeBetween(room.getRoomID(), startDate, endDate));
-            mapEnd.put(room, conferenceRepository.findByRoomAndEndTimeBetweenAndStartTimeBefore(room.getRoomID(), startDate, endDate, startDate));
+            mapStart.put(room, conferenceRepository.findByRoomAndStatusAndStartTimeBetween(room.getRoomID(), 1, startDate, endDate));
+            mapEnd.put(room, conferenceRepository.findByRoomAndStatusAndEndTimeBetweenAndStartTimeBefore(room.getRoomID(), 1, startDate, endDate, startDate));
         }
         /*用来存放全部会议室占用信息*/
         List<RoomTime> list = new ArrayList<>();
