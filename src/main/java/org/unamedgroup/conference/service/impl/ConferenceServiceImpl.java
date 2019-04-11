@@ -24,7 +24,7 @@ public class ConferenceServiceImpl implements MyConferenceService {
 
     @Override
     public List<Conference> getConferencesByProposer(int userId) {
-        return conferenceRepository.getConferencesByUser(userId);
+        return conferenceRepository.getConferencesByUserAndStatus(userId, 1);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ConferenceServiceImpl implements MyConferenceService {
         List<Conference> conferenceList = new ArrayList<>();
         List<Participants> participants = participantsRepository.findByUserID(userId);
         for(Participants participant : participants) {
-            conferenceList.add(conferenceRepository.getConferenceByParticipantSequence(participant.getSequenceID()));
+            conferenceList.add(conferenceRepository.getConferenceByParticipantSequenceAndStatus(participant.getSequenceID(), 1));
         }
         return conferenceList;
     }
