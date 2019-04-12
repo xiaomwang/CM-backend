@@ -10,11 +10,17 @@ import lombok.Data;
  */
 
 @Data
-public class FailureInfo extends Info {
+public class FailureInfo {
+    private Integer status;
     private String message;
 
-    public FailureInfo(String message) {
-        super(-1);
+    public FailureInfo() {
+        status = -1;
+        message = "登录验证失败，请检查是否登录！";
+    }
+
+    public FailureInfo(Integer status, String message) {
+        this.status = status;
         this.message = message;
     }
 }
