@@ -6,6 +6,7 @@ import org.unamedgroup.conference.dao.ConferenceRepository;
 import org.unamedgroup.conference.dao.ParticipantsRepository;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Participants;
+import org.unamedgroup.conference.service.ConferenceManageService;
 import org.unamedgroup.conference.service.MyConferenceService;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
  * @Date： 2019/4/11 8:43
  */
 @Service
-public class ConferenceServiceImpl implements MyConferenceService {
+public class ConferenceServiceImpl implements MyConferenceService, ConferenceManageService {
     @Autowired
     ConferenceRepository conferenceRepository;
     @Autowired
@@ -44,5 +45,10 @@ public class ConferenceServiceImpl implements MyConferenceService {
             conferenceList.addAll(conferenceList.size(),getConferencesByParticipant(userId));
         }
         return conferenceList;
+    }
+
+    @Override
+    public List<Conference> getNotStartConferenceList(Integer status) {
+        return conferenceRepository.getConferencesByStatus(0);
     }
 }

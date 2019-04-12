@@ -102,6 +102,7 @@
                     <fork>
                         true
                     </fork>
+                    <includeSystemScope>true</includeSystemScope>
                 </configuration>
             </plugin>
         </plugins>
