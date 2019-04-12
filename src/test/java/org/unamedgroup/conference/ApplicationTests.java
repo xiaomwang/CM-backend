@@ -30,10 +30,10 @@ public class ApplicationTests {
     }
     @Test
     public void faceDetecture() throws FileNotFoundException {
-        File file = new File("E:\\IDEA\\zhoutao3.jpg");
-        //IDetectFaceService detectFaceService= new DetectFaceServiceImpl();
-        detectFaceService.addFaceFeature(file, 1);
-        double result = detectFaceService.compareFace(file,1);
-        System.out.println(result);
+//        File file = new File("E:\\IDEA\\zhoutao3.jpg");
+//        //IDetectFaceService detectFaceService= new DetectFaceServiceImpl();
+//        detectFaceService.addFaceFeature(file, 1);
+//        double result = detectFaceService.compareFace(file,1);
+//        System.out.println(result);
     }
 }

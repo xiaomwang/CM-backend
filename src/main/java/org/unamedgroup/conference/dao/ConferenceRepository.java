@@ -79,4 +79,11 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
      * @return 会议列表
      */
     List<Conference> getConferencesByUserAndStatus(Integer user, Integer status);
+
+    /**
+     * 根据会议状态获取会议信息列表
+     * @param status 会议状态
+     * @return 相应会议状态的会议信息列表
+     */
+    List<Conference> getConferencesByStatus(Integer status);
 }
