@@ -10,6 +10,7 @@ import org.unamedgroup.conference.entity.temp.RoomTime;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.service.GuideQueryService;
 import org.unamedgroup.conference.service.QuickCheckService;
+import org.unamedgroup.conference.service.RelevanceQueryService;
 
 import java.util.Date;
 import java.util.List;
@@ -31,6 +32,8 @@ public class RoomController {
     QuickCheckService quickCheckService;
     @Autowired
     GuideQueryService guideQueryService;
+    @Autowired
+    RelevanceQueryService relevanceQueryService;
 
     @RequestMapping(value = "/free", method = RequestMethod.GET)
     @ResponseBody
@@ -65,5 +68,10 @@ public class RoomController {
     @GetMapping(value = "list/pre")
     public Object listPre(Integer buildingID, Integer roomID) {
         return new SuccessInfo(quickCheckService.getConferenceList(buildingID, roomID));
+    }
+
+    @GetMapping(value = "list/building")
+    public Object listByBuilding(Integer buildingID) {
+        return relevanceQueryService.roomByBuilding(buildingID);
     }
 }
