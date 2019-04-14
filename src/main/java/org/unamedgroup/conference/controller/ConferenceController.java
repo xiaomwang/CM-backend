@@ -22,7 +22,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @RequestMapping(value = "conference")
-public class ConferenceController {
+public class    ConferenceController {
 
     @Autowired
     ConferenceRepository conferenceRepository;
