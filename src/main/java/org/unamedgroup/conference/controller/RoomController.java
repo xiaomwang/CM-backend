@@ -60,6 +60,10 @@ public class RoomController {
         } else {
             return new SuccessInfo(quickCheckService.handleRoomTime(date, buildingID, roomID));
         }
+    }
 
+    @GetMapping(value = "list/pre")
+    public Object listPre(Integer buildingID, Integer roomID) {
+        return new SuccessInfo(quickCheckService.getConferenceList(buildingID, roomID));
     }
 }
