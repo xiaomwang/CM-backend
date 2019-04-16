@@ -1,5 +1,6 @@
 package org.unamedgroup.conference.controller;
 
+import com.auth0.jwt.JWT;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.unamedgroup.conference.entity.User;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.security.JWTUtil;
+import org.unamedgroup.conference.security.UnauthorizedException;
 
 import java.util.List;
 
@@ -83,5 +85,23 @@ public class UserController {
             return new FailureInfo();
         }
         return new SuccessInfo("success!");
+    }
+
+    @RequestMapping(value = "/userID", method = RequestMethod.GET)
+    @ResponseBody
+    public Object getUserID() {
+        String token = null;
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            if (subject.isAuthenticated() == true) {
+                token = subject.getPrincipal().toString();
+            } else {
+                throw new UnauthorizedException();
+            }
+        } catch (Exception e) {
+            return new FailureInfo(-2, e.toString());
+        }
+        User user = userRepository.getUserByPhoneNumber(JWTUtil.getPhoneNumber(token));
+        return new SuccessInfo(user.getUserID());
     }
 }

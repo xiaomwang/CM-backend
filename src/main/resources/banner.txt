@@ -1,4 +1,4 @@
-${AnsiColor.BRIGHT_GREEN}
+${AnsiColor.BRIGHT_RED}
 ////////////////////////////////////////////////////////////////////
 //                          _ooOoo_                               //
 //                         o8888888o                              //
@@ -21,6 +21,5 @@ ${AnsiColor.BRIGHT_GREEN}
 //      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^        //
 //            佛祖保佑       永不宕机     永无BUG                   //
 ////////////////////////////////////////////////////////////////////
-${AnsiColor.BRIGHT_RED}
 Spring Boot Version: ${spring-boot.version}${spring-boot.formatted-version}
 

@@ -4,6 +4,7 @@ import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import org.unamedgroup.conference.dao.RoomRepository;
 import org.unamedgroup.conference.entity.Room;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.RoomTime;
@@ -12,6 +13,7 @@ import org.unamedgroup.conference.service.GuideQueryService;
 import org.unamedgroup.conference.service.QuickCheckService;
 import org.unamedgroup.conference.service.RelevanceQueryService;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -33,15 +35,42 @@ public class RoomController {
     @Autowired
     GuideQueryService guideQueryService;
     @Autowired
+    RoomRepository roomRepository;
+    @Autowired
     RelevanceQueryService relevanceQueryService;
 
     @RequestMapping(value = "/free", method = RequestMethod.GET)
     @ResponseBody
     public Object getFreeRoom(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date start, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date end) {
         if (guideQueryService.getFreeRoomIDByDate(start, end) == null) {
-            return new FailureInfo(6000, "查询空闲房间失败！请核实！");
+            return new FailureInfo(6000, "没有房间空闲或查询失败！请核实！");
         } else {
             return new SuccessInfo(guideQueryService.getFreeRoomIDByDate(start, end));
+        }
+    }
+
+    @RequestMapping(value = "/freeRoomNumber", method = RequestMethod.GET)
+    @ResponseBody
+    public Object getFreeRoomNumberToday() {
+        Date current = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(current);
+        // 日期后移一天
+        calendar.add(Calendar.DAY_OF_MONTH, +1);
+        // 小时置零
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        // 分置零
+        calendar.set(Calendar.MINUTE, 0);
+        // 秒置零
+        calendar.set(Calendar.SECOND, 0);
+        // 毫秒置零
+        calendar.set(Calendar.MILLISECOND, 0);
+
+
+        if (guideQueryService.getFreeRoomIDByDate(current, calendar.getTime()) == null) {
+            return new FailureInfo(6000, "没有房间空闲或查询失败！请核实！");
+        } else {
+            return new SuccessInfo(guideQueryService.getFreeRoomIDByDate(current, calendar.getTime()).size());
         }
     }
 
@@ -83,6 +112,21 @@ public class RoomController {
             return new FailureInfo(6003, "获取会议室失败!");
         } else {
             return new SuccessInfo(roomList);
+        }
+    }
+
+    @RequestMapping(value = "/roomObject", method = RequestMethod.GET)
+    @ResponseBody
+    public Object getRoomObject(Integer roomID) {
+        try {
+            Room room = roomRepository.getRoomByRoomID(roomID);
+            if (room != null) {
+                return new SuccessInfo(room);
+            } else {
+                throw new NullPointerException();
+            }
+        } catch (Exception e) {
+            return new FailureInfo(6002, "找不到满足条件的房间！");
         }
     }
 }
