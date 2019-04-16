@@ -38,14 +38,21 @@ public class ConferenceServiceImpl implements MyConferenceService, ConferenceMan
         return conferenceList;
     }
 
+//    @Override
+//    public List<Conference> getMyConferenceList(int userId) {
+//        List<Conference> listProposer = getConferencesByProposer(userId);
+//        List<Conference> listParticipant = getConferencesByParticipant(userId);
+//        if(listParticipant!=null) {
+//            listProposer.addAll(listProposer.size(),listParticipant);
+//        }
+//        return listProposer;
+//    }
+
     @Override
     public List<Conference> getMyConferenceList(int userId) {
-        List<Conference> listProposer = getConferencesByProposer(userId);
-        List<Conference> listParticipant = getConferencesByParticipant(userId);
-        if(listParticipant!=null) {
-            listProposer.addAll(listProposer.size(),listParticipant);
-        }
-        return listProposer;
+        List<Integer> participants = participantsRepository.findSequenceIDByUserID(userId);
+        List<Conference> conferenceList = conferenceRepository.findMyConference(1, userId, participants);
+        return conferenceList;
     }
 
     @Override

@@ -1,9 +1,10 @@
 package org.unamedgroup.conference.dao;
 
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.unamedgroup.conference.entity.Conference;
-import org.unamedgroup.conference.entity.User;
 
 import java.util.Date;
 import java.util.List;
@@ -99,9 +100,21 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
 
     /**
      * 根据会议状态获取会议信息列表
+     *
      * @param status 会议状态
      * @return 相应会议状态的会议信息列表
      */
     List<Conference> getConferencesByStatus(Integer status);
+
+    /**
+     * 按照升序查询与用户相关的所有会议
+     * @param status 会议状态
+     * @param user 用户id
+     * @param participantSequence 与会人序列
+     * @return 会议列表
+     */
+    @Modifying
+    @Query(value = "select c from Conference c where c.status = ?1 and (c.user = ?2 or c.participantSequence in (?3)) order by c.startTime ASC ")
+    List<Conference> findMyConference(Integer status, Integer user, List<Integer> participantSequence);
 
 }
