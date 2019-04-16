@@ -67,7 +67,12 @@ public class    ConferenceController {
     }
 
     @GetMapping(value = "/details")
-    public List<Conference> getDetatils(Integer userId) {
-        return myConferenceService.getMyConferenceList(userId);
+    public Object getDetatils(Integer userId) {
+        List<Conference> conferenceList = myConferenceService.getMyConferenceList(userId);
+        if (conferenceList==null) {
+            return new FailureInfo(3101, "个人会议信息详情拉取失败");
+        } else {
+            return new SuccessInfo(conferenceList);
+        }
     }
 }
