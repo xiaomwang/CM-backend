@@ -1,5 +1,6 @@
 package org.unamedgroup.conference.dao;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.unamedgroup.conference.entity.Participants;
@@ -18,4 +19,7 @@ public interface ParticipantsRepository extends CrudRepository<Participants, Int
      * @return 参与者序列号列表
      */
     List<Participants> findByUserID(Integer userId);
+
+    @Query(value = "select p.sequenceID from Participants p where p.userID=?1")
+    List<Integer> findSequenceIDByUserID(Integer userId);
 }
