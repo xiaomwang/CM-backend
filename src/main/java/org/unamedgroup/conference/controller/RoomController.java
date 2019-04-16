@@ -58,20 +58,31 @@ public class RoomController {
     })
     @GetMapping(value = "list")
     public Object getList(String date, Integer buildingID, Integer roomID) {
-        if (quickCheckService.handleRoomTime(date, buildingID, roomID) == null) {
+        List<RoomTime> roomTimeList = quickCheckService.handleRoomTime(date, buildingID, roomID);
+        if (roomTimeList == null) {
             return new FailureInfo(6001, "处理房间填充失败！");
         } else {
-            return new SuccessInfo(quickCheckService.handleRoomTime(date, buildingID, roomID));
+            return new SuccessInfo(roomTimeList);
         }
     }
 
     @GetMapping(value = "list/pre")
     public Object listPre(Integer buildingID, Integer roomID) {
-        return new SuccessInfo(quickCheckService.getConferenceList(buildingID, roomID));
+        List<Room> roomList = quickCheckService.getConferenceList(buildingID, roomID);
+        if(roomList == null) {
+            return new FailureInfo(6002, "处理房间预处理失败！");
+        } else {
+            return new SuccessInfo(roomList);
+        }
     }
 
     @GetMapping(value = "list/building")
     public Object listByBuilding(Integer buildingID) {
-        return relevanceQueryService.roomByBuilding(buildingID);
+        List<Room> roomList = relevanceQueryService.roomByBuilding(buildingID);
+        if(roomList == null) {
+            return new FailureInfo(6003, "获取会议室失败!");
+        } else {
+            return new SuccessInfo(roomList);
+        }
     }
 }
