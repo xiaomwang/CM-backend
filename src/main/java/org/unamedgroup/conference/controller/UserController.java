@@ -99,7 +99,7 @@ public class UserController {
                 throw new UnauthorizedException();
             }
         } catch (Exception e) {
-            return new FailureInfo(-1, e.toString());
+            return new FailureInfo(-2, e.toString());
         }
         User user = userRepository.getUserByPhoneNumber(JWTUtil.getPhoneNumber(token));
         return new SuccessInfo(user.getUserID());
