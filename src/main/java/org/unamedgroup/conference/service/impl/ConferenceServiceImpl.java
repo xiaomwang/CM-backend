@@ -40,11 +40,12 @@ public class ConferenceServiceImpl implements MyConferenceService, ConferenceMan
 
     @Override
     public List<Conference> getMyConferenceList(int userId) {
-        List<Conference> conferenceList = getConferencesByProposer(userId);
-        if(getConferencesByParticipant(userId)!=null) {
-            conferenceList.addAll(conferenceList.size(),getConferencesByParticipant(userId));
+        List<Conference> listProposer = getConferencesByProposer(userId);
+        List<Conference> listParticipant = getConferencesByParticipant(userId);
+        if(listParticipant!=null) {
+            listProposer.addAll(listProposer.size(),listParticipant);
         }
-        return conferenceList;
+        return listProposer;
     }
 
     @Override
