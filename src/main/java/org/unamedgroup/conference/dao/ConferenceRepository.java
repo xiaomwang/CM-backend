@@ -16,10 +16,11 @@ import java.util.List;
 public interface ConferenceRepository extends CrudRepository<Conference, Integer> {
     /**
      * 根据开始日期和会议状态以及会议室ID查找所有会议
-     * @param id 会议室ID
+     *
+     * @param id     会议室ID
      * @param status 会议状态
-     * @param start 开始时间
-     * @param end 结束时间
+     * @param start  开始时间
+     * @param end    结束时间
      * @return 返回会议列表
      */
     List<Conference> findByRoomAndStatusAndStartTimeBetween(Integer id, Integer status, Date start, Date end);
@@ -27,7 +28,7 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
     @Override
     Conference save(Conference conference);
 
-  
+
     /**
      * 返回两个时间点之间的会议列表
      *
@@ -48,6 +49,7 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
 
     /**
      * 根据用户ID来获取用户所有的会议
+     *
      * @param user
      * @return 会议列表
      */
@@ -55,30 +57,45 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
 
     /**
      * 根据结束日期和会议状态以及会议室ID查找所有会议
-     * @param id 会议室ID
+     *
+     * @param id     会议室ID
      * @param status 会议状态
-     * @param start 开始时间
-     * @param end 结束时间
-     * @param date 当前日期
+     * @param start  开始时间
+     * @param end    结束时间
+     * @param date   当前日期
      * @return 会议列表
      */
     List<Conference> findByRoomAndStatusAndEndTimeBetweenAndStartTimeBefore(Integer id, Integer status, Date start, Date end, Date date);
 
     /**
      * 根据参与者序列号ID查询会议信息
+     *
      * @param participantSequence 参与者序列号
-     * @param status 会议状态
+     * @param status              会议状态
      * @return 会议信息
      */
     Conference getConferenceByParticipantSequenceAndStatus(Integer participantSequence, Integer status);
 
     /**
      * 根据用户ID以及会议状态来获取用户所有的会议
-     * @param user 用户ID
+     *
+     * @param user   用户ID
      * @param status 会议状态
      * @return 会议列表
      */
     List<Conference> getConferencesByUserAndStatus(Integer user, Integer status);
+
+
+    /**
+     * 会议中是否包括某个时间点（或小时间段）
+     * 主要用来检测空闲会议室使用
+     *
+     * @param date  时间段开始时间/时间点
+     * @param date1 时间段结束时间/时间点
+     * @return 会议列表
+     */
+    List<Conference> findConferencesByStartTimeBeforeAndEndTimeAfter(Date date, Date date1);
+
 
     /**
      * 根据会议状态获取会议信息列表
@@ -86,4 +103,5 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
      * @return 相应会议状态的会议信息列表
      */
     List<Conference> getConferencesByStatus(Integer status);
+
 }
