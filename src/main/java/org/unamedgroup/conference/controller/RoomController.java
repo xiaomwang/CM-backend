@@ -3,6 +3,7 @@ package org.unamedgroup.conference.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import org.unamedgroup.conference.dao.RoomRepository;
 import org.unamedgroup.conference.entity.Room;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
@@ -29,6 +30,8 @@ public class RoomController {
     QuickCheckService quickCheckService;
     @Autowired
     GuideQueryService guideQueryService;
+    @Autowired
+    RoomRepository roomRepository;
 
     @RequestMapping(value = "/free", method = RequestMethod.GET)
     @ResponseBody
@@ -73,5 +76,20 @@ public class RoomController {
             return new SuccessInfo(quickCheckService.handleRoomTime(date, buildingID, roomID));
         }
 
+    }
+
+    @RequestMapping(value = "/roomObject", method = RequestMethod.GET)
+    @ResponseBody
+    public Object getRoomObject(Integer roomID) {
+        try {
+            Room room = roomRepository.getRoomByRoomID(roomID);
+            if (room != null) {
+                return new SuccessInfo(room);
+            } else {
+                throw new NullPointerException();
+            }
+        } catch (Exception e) {
+            return new FailureInfo(6002, "找不到满足条件的房间！");
+        }
     }
 }
