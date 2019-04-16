@@ -96,4 +96,12 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
      */
     List<Conference> findConferencesByStartTimeBeforeAndEndTimeAfter(Date date, Date date1);
 
+
+    /**
+     * 根据会议状态获取会议信息列表
+     * @param status 会议状态
+     * @return 相应会议状态的会议信息列表
+     */
+    List<Conference> getConferencesByStatus(Integer status);
+
 }

@@ -1,14 +1,17 @@
 package org.unamedgroup.conference.controller;
 
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.unamedgroup.conference.dao.RoomRepository;
 import org.unamedgroup.conference.entity.Room;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
+import org.unamedgroup.conference.entity.temp.RoomTime;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.service.GuideQueryService;
 import org.unamedgroup.conference.service.QuickCheckService;
+import org.unamedgroup.conference.service.RelevanceQueryService;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -22,6 +25,7 @@ import java.util.List;
  * @date 2019/03/12
  */
 
+@Api(value = "会议室操作 API", description = "会议室操作 API", position = 100, protocols = "http")
 @CrossOrigin
 @RestController
 @RequestMapping("/room")
@@ -32,6 +36,8 @@ public class RoomController {
     GuideQueryService guideQueryService;
     @Autowired
     RoomRepository roomRepository;
+    @Autowired
+    RelevanceQueryService relevanceQueryService;
 
     @RequestMapping(value = "/free", method = RequestMethod.GET)
     @ResponseBody
@@ -68,14 +74,45 @@ public class RoomController {
         }
     }
 
+    @ApiOperation(value = "快速查看会议室api", protocols = "http"
+            , produces = "application/json", consumes = "application/json"
+            , response = RoomTime.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "date", value = "日期", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "buildingID", value = "楼宇编号", required = false, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "roomID", value = "房间编号", required = false, dataType = "int", paramType = "query")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "请求成功")
+    })
     @GetMapping(value = "list")
     public Object getList(String date, Integer buildingID, Integer roomID) {
-        if (quickCheckService.handleRoomTime(date, buildingID, roomID) == null) {
+        List<RoomTime> roomTimeList = quickCheckService.handleRoomTime(date, buildingID, roomID);
+        if (roomTimeList == null) {
             return new FailureInfo(6001, "处理房间填充失败！");
         } else {
-            return new SuccessInfo(quickCheckService.handleRoomTime(date, buildingID, roomID));
+            return new SuccessInfo(roomTimeList);
         }
+    }
 
+    @GetMapping(value = "list/pre")
+    public Object listPre(Integer buildingID, Integer roomID) {
+        List<Room> roomList = quickCheckService.getConferenceList(buildingID, roomID);
+        if(roomList == null) {
+            return new FailureInfo(6002, "处理房间预处理失败！");
+        } else {
+            return new SuccessInfo(roomList);
+        }
+    }
+
+    @GetMapping(value = "list/building")
+    public Object listByBuilding(Integer buildingID) {
+        List<Room> roomList = relevanceQueryService.roomByBuilding(buildingID);
+        if(roomList == null) {
+            return new FailureInfo(6003, "获取会议室失败!");
+        } else {
+            return new SuccessInfo(roomList);
+        }
     }
 
     @RequestMapping(value = "/roomObject", method = RequestMethod.GET)

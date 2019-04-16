@@ -11,6 +11,7 @@ import org.unamedgroup.conference.entity.Room;
 import org.unamedgroup.conference.entity.temp.RoomTime;
 import org.unamedgroup.conference.service.GuideQueryService;
 import org.unamedgroup.conference.service.QuickCheckService;
+import org.unamedgroup.conference.service.RelevanceQueryService;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -26,7 +27,7 @@ import java.util.*;
  */
 
 @Component
-public class RoomServiceImpl implements QuickCheckService, GuideQueryService {
+public class RoomServiceImpl implements QuickCheckService, GuideQueryService, RelevanceQueryService {
 
     @Autowired
     RoomRepository roomRepository;
@@ -341,5 +342,10 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService {
             System.err.println(e.toString());
         }
         return null;
+    }
+
+    @Override
+    public List<Room> roomByBuilding(Integer buildingID) {
+        return roomRepository.getRoomsByBuilding(buildingID);
     }
 }
