@@ -111,10 +111,12 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
      * @param status 会议状态
      * @param user 用户id
      * @param participantSequence 与会人序列
+     * @param pageNumber 起始索引
+     * @param pageSize 每页容量
      * @return 会议列表
      */
     @Modifying
-    @Query(value = "select c from Conference c where c.status = ?1 and (c.user = ?2 or c.participantSequence in (?3)) order by c.startTime ASC ")
-    List<Conference> findMyConference(Integer status, Integer user, List<Integer> participantSequence);
+    @Query(value = "select * from conference c where c.status = ?1 and (c.user = ?2 or c.participant_sequence in (?3)) order by c.start_time ASC limit ?4,?5", nativeQuery = true)
+    List<Conference> findMyConference(Integer status, Integer user, List<Integer> participantSequence, Integer pageNumber, Integer pageSize);
 
 }
