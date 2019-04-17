@@ -3,6 +3,7 @@ package org.unamedgroup.conference.security;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.unamedgroup.conference.entity.temp.FailureInfo;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -27,7 +28,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
         HttpServletRequest req = (HttpServletRequest) request;
         String authorization = req.getHeader("Authorization");
-        if (authorization != null){
+        if (authorization != null) {
             return true;
         } else {
             return false;
@@ -89,14 +90,15 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     }
 
     /**
-     * 将非法请求跳转到 /401
+     * 将非法请求返回错误
      */
-    private void response401(ServletRequest req, ServletResponse resp) {
-        try {
-            HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
-            httpServletResponse.sendRedirect("/401");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private Object response401(ServletRequest req, ServletResponse resp) {
+        return new FailureInfo();
+//        try {
+////            HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
+////            httpServletResponse.sendRedirect("/401");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }
