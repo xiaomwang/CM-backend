@@ -49,9 +49,9 @@ public class ConferenceServiceImpl implements MyConferenceService, ConferenceMan
 //    }
 
     @Override
-    public List<Conference> getMyConferenceList(int userId) {
+    public List<Conference> getMyConferenceList(int userId, Integer pageCurrent, Integer pageSize) {
         List<Integer> participants = participantsRepository.findSequenceIDByUserID(userId);
-        List<Conference> conferenceList = conferenceRepository.findMyConference(1, userId, participants);
+        List<Conference> conferenceList = conferenceRepository.findMyConference(1, userId, participants, (pageCurrent-1)*pageSize, pageSize);
         return conferenceList;
     }
 

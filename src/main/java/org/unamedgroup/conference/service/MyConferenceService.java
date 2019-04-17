@@ -26,7 +26,9 @@ public interface MyConferenceService {
     /**
      * 查询用户的所有相关会议信息
      * @param userId 用户工号
+     * @param pageCurrent 当前页码
+     * @param pageSize 页容量
      * @return 该员工的所有相关会议信息列表
      */
-    List<Conference> getMyConferenceList(int userId);
+    List<Conference> getMyConferenceList(int userId, Integer pageCurrent, Integer pageSize);
 }
