@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.unamedgroup.conference.feature.entity.util.ImageUtil;
 import org.springframework.web.bind.annotation.*;
 import org.unamedgroup.conference.feature.service.IDetectFaceService;
-import java.util.Base64.Decoder;
+import sun.misc.BASE64Decoder;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,23 +33,23 @@ public class BioFeatureController {
      * @param userID
      * @return
      */
-//    @RequestMapping(value = "/set", method = RequestMethod.POST)
-//    @ResponseBody
-//    public Integer faceDetect(String imgStr, Integer userID) {
-//        try {
-//            InputStream inputStream = ImageUtil.base64InputStream(imgStr);
-//            FaceFeature faceFeature = detectFaceService.addFaceFeature(inputStream, userID);
-//            if (faceFeature == null) {
-//                System.err.println("找不到人脸信息");
-//                return -1;
-//            }
-//            return 0;
-//        } catch (Exception e) {
-//            System.err.println("发生错误，请检查：");
-//            e.toString();
-//        }
-//        return -1;
-//    }
+    @RequestMapping(value = "/set", method = RequestMethod.POST)
+    @ResponseBody
+    public Integer faceDetect(String imgStr, Integer userID) {
+        try {
+            InputStream inputStream = ImageUtil.base64InputStream(imgStr);
+            FaceFeature faceFeature = detectFaceService.addFaceFeature(inputStream, userID);
+            if (faceFeature == null) {
+                System.err.println("找不到人脸信息");
+                return -1;
+            }
+            return 0;
+        } catch (Exception e) {
+            System.err.println("发生错误，请检查：");
+            e.toString();
+        }
+        return -1;
+    }
 
     /**
      * 人脸匹配
@@ -58,7 +58,7 @@ public class BioFeatureController {
      * @param userID
      * @return result
      */
-/*
+
     @RequestMapping(value = "/get", method = RequestMethod.POST)
     @ResponseBody
     public Double faceCompare(String imgStr, Integer userID) {
@@ -76,6 +76,6 @@ public class BioFeatureController {
         }
         return -1.0;
     }
-*/
+
 
 }

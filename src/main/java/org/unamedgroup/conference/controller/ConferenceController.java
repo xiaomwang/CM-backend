@@ -11,6 +11,7 @@ import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.security.JWTToken;
 import org.unamedgroup.conference.security.JWTUtil;
+import org.unamedgroup.conference.service.GeneralService;
 import org.unamedgroup.conference.service.MyConferenceService;
 
 import java.util.List;
@@ -33,6 +34,8 @@ public class ConferenceController {
     MyConferenceService myConferenceService;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    GeneralService generalService;
 
     /**
      * 预定会议
@@ -57,14 +60,7 @@ public class ConferenceController {
                 return new FailureInfo(3000, "传入的会议参数无效！");
             } else {
                 // 当前会议时间是否有会，如果无会议，继续
-                List<Conference> conferenceList1 = conferenceRepository.findConferencesByStartTimeLessThanEqualAndEndTimeGreaterThanEqual(conference.getStartTime(), conference.getStartTime());
-                List<Conference> conferenceList2 = conferenceRepository.findConferencesByStartTimeLessThanEqualAndEndTimeGreaterThanEqual(conference.getEndTime(), conference.getEndTime());
-                List<Conference> conferenceList3 = conferenceRepository.findConferencesByStartTimeLessThanEqualAndEndTimeGreaterThanEqual(conference.getStartTime(), conference.getEndTime());
-                // 去重去并集
-                conferenceList2.removeAll(conferenceList1);
-                conferenceList1.addAll(conferenceList2);
-                conferenceList3.removeAll(conferenceList1);
-                conferenceList1.addAll(conferenceList3);
+                List<Conference> conferenceList1 = generalService.getConferencesByDate(conference.getStartTime(), conference.getEndTime());
 
                 // 如果当前时间段没有会议直接写数据库预定成功
                 if (conferenceList1.size() != 0) {
@@ -94,7 +90,7 @@ public class ConferenceController {
         String phone = JWTUtil.getPhoneNumber(subject.getPrincipal().toString());
         Integer userId = userRepository.getUserByPhoneNumber(phone).getUserID();
         List<Conference> conferenceList = myConferenceService.getMyConferenceList(userId, pageCurrent, pageSize);
-        if (conferenceList==null) {
+        if (conferenceList == null) {
             return new FailureInfo(3101, "个人会议信息详情拉取失败");
         } else {
             return new SuccessInfo(conferenceList);
@@ -110,7 +106,7 @@ public class ConferenceController {
         String phone = JWTUtil.getPhoneNumber(subject.getPrincipal().toString());
         Integer userId = userRepository.getUserByPhoneNumber(phone).getUserID();
         Integer total = myConferenceService.getMyConferenceTotal(userId);
-        if(total==null) {
+        if (total == null) {
             return new FailureInfo(3102, "会议信息总数拉取失败");
         } else {
             return new SuccessInfo(total);
