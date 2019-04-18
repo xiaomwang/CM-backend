@@ -22,9 +22,6 @@ public class Conference implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer conferenceID;
     private String subject;
-    @OneToOne
-    @JoinColumn(name = "room_entity", referencedColumnName = "roomid")
-    private Room roomEntity;
     private Integer room;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startTime;
