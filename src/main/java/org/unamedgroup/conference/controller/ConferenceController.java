@@ -119,6 +119,7 @@ public class ConferenceController {
         try {
             Conference conference = conferenceRepository.getConferenceByConferenceID(conferenceID);
             conference.setStatus(-1);  //-1表示会议被取消
+            conferenceRepository.save(conference);
             return new SuccessInfo("会议取消成功！");
         } catch (Exception e) {
             System.err.println("会议取消出错！");
@@ -132,6 +133,7 @@ public class ConferenceController {
         try {
             Conference conference = conferenceRepository.getConferenceByConferenceID(conferenceID);
             conference.setStatus(0);  //0表示会议被驳回
+            conferenceRepository.save(conference);
             return new SuccessInfo("会议驳回成功！");
         } catch (Exception e) {
             System.err.println("会议驳回出错！");
