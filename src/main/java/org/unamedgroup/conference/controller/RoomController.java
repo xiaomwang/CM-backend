@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.unamedgroup.conference.dao.RoomRepository;
+import org.unamedgroup.conference.entity.Building;
 import org.unamedgroup.conference.entity.Room;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.RoomTime;
@@ -106,8 +107,8 @@ public class RoomController {
     }
 
     @GetMapping(value = "list/building")
-    public Object listByBuilding(Integer buildingID) {
-        List<Room> roomList = relevanceQueryService.roomByBuilding(buildingID);
+    public Object listByBuilding(Building building) {
+        List<Room> roomList = relevanceQueryService.roomByBuilding(building);
         if(roomList == null) {
             return new FailureInfo(6003, "获取会议室失败!");
         } else {

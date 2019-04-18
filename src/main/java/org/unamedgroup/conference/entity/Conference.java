@@ -23,9 +23,8 @@ public class Conference implements Serializable {
     private Integer conferenceID;
     private String subject;
     @OneToOne
-    @JoinColumn(name = "room_entity", referencedColumnName = "roomid")
-    private Room roomEntity;
-    private Integer room;
+    @JoinColumn(name = "room", referencedColumnName = "roomid")
+    private Room room;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startTime;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
