@@ -106,13 +106,14 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        if (getConferenceList(buildingId, roomId) == null) {
+        List<Room> roomList = getConferenceList(buildingId, roomId);
+        if (roomList == null) {
             return null;
         }
         /*遍历会议室并将每个会议室的会议列表分开存放哈希中*/
         Map<Room, List<Conference>> mapStart = new HashMap<>(16);
         Map<Room, List<Conference>> mapEnd = new HashMap<>(16);
-        for (Room room : getConferenceList(buildingId, roomId)) {
+        for (Room room : roomList) {
             mapStart.put(room, conferenceRepository.findByRoomAndStatusAndStartTimeBetween(room.getRoomID(), 1, startDate, endDate));
             mapEnd.put(room, conferenceRepository.findByRoomAndStatusAndEndTimeBetweenAndStartTimeBefore(room.getRoomID(), 1, startDate, endDate, startDate));
         }
