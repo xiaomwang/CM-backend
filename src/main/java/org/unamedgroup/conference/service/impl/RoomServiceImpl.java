@@ -346,7 +346,7 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     }
 
     @Override
-    public List<Room> roomByBuilding(Integer buildingID) {
-        return roomRepository.getRoomsByBuilding(buildingID);
+    public List<Room> roomByBuilding(Building building) {
+        return roomRepository.getRoomsByBuilding(building);
     }
 }
