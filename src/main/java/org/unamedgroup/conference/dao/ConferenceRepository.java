@@ -97,6 +97,15 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
      */
     List<Conference> findConferencesByStartTimeBeforeAndEndTimeAfter(Date date, Date date1);
 
+    /**
+     * 查询某个时间但是否在会议的时间内（闭区间）
+     *
+     * @param date 时间点
+     * @param date_same 时间点，根据JPA要求要传两个参数
+     * @return
+     */
+    List<Conference> findConferencesByStartTimeLessThanEqualAndEndTimeGreaterThanEqual(Date date, Date date_same);
+
 
     /**
      * 根据会议状态获取会议信息列表
