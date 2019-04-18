@@ -112,4 +112,32 @@ public class ConferenceController {
             return new SuccessInfo(total);
         }
     }
+
+    @RequestMapping(value = "/cancel", method = RequestMethod.GET)
+    @ResponseBody
+    public Object cancel(Integer conferenceID) {
+        try {
+            Conference conference = conferenceRepository.getConferenceByConferenceID(conferenceID);
+            conference.setStatus(-1);  //-1表示会议被取消
+            return new SuccessInfo("会议取消成功！");
+        } catch (Exception e) {
+            System.err.println("会议取消出错！");
+            return new FailureInfo(3004, "会议取消失败，请检查会议是否存在！");
+        }
+    }
+
+    @RequestMapping(value = "/reject", method = RequestMethod.GET)
+    @ResponseBody
+    public Object reject(Integer conferenceID) {
+        try {
+            Conference conference = conferenceRepository.getConferenceByConferenceID(conferenceID);
+            conference.setStatus(0);  //0表示会议被驳回
+            return new SuccessInfo("会议驳回成功！");
+        } catch (Exception e) {
+            System.err.println("会议驳回出错！");
+            return new FailureInfo(3005, "会议驳回失败，请检查会议是否存在！");
+        }
+    }
+
+
 }
