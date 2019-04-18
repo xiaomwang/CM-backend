@@ -1,6 +1,7 @@
 package org.unamedgroup.conference.entity.temp;
 
 import lombok.Data;
+import org.unamedgroup.conference.entity.Building;
 
 /**
  * @Author: 白振宇
@@ -11,7 +12,7 @@ import lombok.Data;
 public class RoomTime {
     private Integer roomID;
     private String name;
-    private Integer buidling;
+    private Building buidling;
     private String location;
     private Integer capacity;
     private String catalogue;
