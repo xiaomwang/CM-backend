@@ -31,4 +31,11 @@ public interface MyConferenceService {
      * @return 该员工的所有相关会议信息列表
      */
     List<Conference> getMyConferenceList(int userId, Integer pageCurrent, Integer pageSize);
+
+    /**
+     * 查询用户所有的相关会议的总数
+     * @param userId 用户id
+     * @return 相关会议总数
+     */
+    Integer getMyConferenceTotal(int userId);
 }

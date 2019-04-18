@@ -5,9 +5,12 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.unamedgroup.conference.dao.ConferenceRepository;
+import org.unamedgroup.conference.dao.UserRepository;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
+import org.unamedgroup.conference.security.JWTToken;
+import org.unamedgroup.conference.security.JWTUtil;
 import org.unamedgroup.conference.service.MyConferenceService;
 
 import java.util.List;
@@ -28,6 +31,8 @@ public class ConferenceController {
     ConferenceRepository conferenceRepository;
     @Autowired
     MyConferenceService myConferenceService;
+    @Autowired
+    UserRepository userRepository;
 
     /**
      * 预定会议
@@ -81,16 +86,34 @@ public class ConferenceController {
     }
 
     @GetMapping(value = "/details")
-    public Object getDetatils(Integer userId, Integer pageCurrent, Integer pageSize) {
+    public Object getDetatils(Integer pageCurrent, Integer pageSize) {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
         }
+        String phone = JWTUtil.getPhoneNumber(subject.getPrincipal().toString());
+        Integer userId = userRepository.getUserByPhoneNumber(phone).getUserID();
         List<Conference> conferenceList = myConferenceService.getMyConferenceList(userId, pageCurrent, pageSize);
         if (conferenceList==null) {
             return new FailureInfo(3101, "个人会议信息详情拉取失败");
         } else {
             return new SuccessInfo(conferenceList);
+        }
+    }
+
+    @GetMapping(value = "/total")
+    public Object getTotal() {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+        String phone = JWTUtil.getPhoneNumber(subject.getPrincipal().toString());
+        Integer userId = userRepository.getUserByPhoneNumber(phone).getUserID();
+        Integer total = myConferenceService.getMyConferenceTotal(userId);
+        if(total==null) {
+            return new FailureInfo(3102, "会议信息总数拉取失败");
+        } else {
+            return new SuccessInfo(total);
         }
     }
 }

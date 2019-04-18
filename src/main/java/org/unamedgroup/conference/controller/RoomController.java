@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.unamedgroup.conference.dao.RoomRepository;
+import org.unamedgroup.conference.entity.Building;
 import org.unamedgroup.conference.entity.Room;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.RoomTime;
@@ -86,8 +87,8 @@ public class RoomController {
             @ApiResponse(code = 200, message = "请求成功")
     })
     @GetMapping(value = "list")
-    public Object getList(String date, Integer buildingID, Integer roomID) {
-        List<RoomTime> roomTimeList = quickCheckService.handleRoomTime(date, buildingID, roomID);
+    public Object getList(String date, Building building, Integer roomID) {
+        List<RoomTime> roomTimeList = quickCheckService.handleRoomTime(date, building, roomID);
         if (roomTimeList == null) {
             return new FailureInfo(6001, "处理房间填充失败！");
         } else {
@@ -96,8 +97,8 @@ public class RoomController {
     }
 
     @GetMapping(value = "list/pre")
-    public Object listPre(Integer buildingID, Integer roomID) {
-        List<Room> roomList = quickCheckService.getConferenceList(buildingID, roomID);
+    public Object listPre(Building building, Integer roomID) {
+        List<Room> roomList = quickCheckService.getConferenceList(building, roomID);
         if(roomList == null) {
             return new FailureInfo(6002, "处理房间预处理失败！");
         } else {
@@ -106,8 +107,8 @@ public class RoomController {
     }
 
     @GetMapping(value = "list/building")
-    public Object listByBuilding(Integer buildingID) {
-        List<Room> roomList = relevanceQueryService.roomByBuilding(buildingID);
+    public Object listByBuilding(Building building) {
+        List<Room> roomList = relevanceQueryService.roomByBuilding(building);
         if(roomList == null) {
             return new FailureInfo(6003, "获取会议室失败!");
         } else {

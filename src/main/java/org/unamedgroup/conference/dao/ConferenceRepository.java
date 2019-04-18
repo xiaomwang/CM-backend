@@ -4,7 +4,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.unamedgroup.conference.entity.Conference;
+import org.unamedgroup.conference.entity.Room;
 
 import java.util.Date;
 import java.util.List;
@@ -18,13 +20,13 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
     /**
      * 根据开始日期和会议状态以及会议室ID查找所有会议
      *
-     * @param id     会议室ID
+     * @param id     会议室信息
      * @param status 会议状态
      * @param start  开始时间
      * @param end    结束时间
      * @return 返回会议列表
      */
-    List<Conference> findByRoomAndStatusAndStartTimeBetween(Integer id, Integer status, Date start, Date end);
+    List<Conference> findByRoomAndStatusAndStartTimeBetween(Room id, Integer status, Date start, Date end);
 
     @Override
     Conference save(Conference conference);
@@ -59,14 +61,14 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
     /**
      * 根据结束日期和会议状态以及会议室ID查找所有会议
      *
-     * @param id     会议室ID
+     * @param id     会议室信息
      * @param status 会议状态
      * @param start  开始时间
      * @param end    结束时间
      * @param date   当前日期
      * @return 会议列表
      */
-    List<Conference> findByRoomAndStatusAndEndTimeBetweenAndStartTimeBefore(Integer id, Integer status, Date start, Date end, Date date);
+    List<Conference> findByRoomAndStatusAndEndTimeBetweenAndStartTimeBefore(Room id, Integer status, Date start, Date end, Date date);
 
     /**
      * 根据参与者序列号ID查询会议信息
@@ -127,5 +129,9 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
     @Modifying
     @Query(value = "select * from conference c where c.status = ?1 and (c.user = ?2 or c.participant_sequence in (?3)) order by c.start_time ASC limit ?4,?5", nativeQuery = true)
     List<Conference> findMyConference(Integer status, Integer user, List<Integer> participantSequence, Integer pageNumber, Integer pageSize);
+
+    @Transactional
+    @Query(value = "select count(*) from conference c where c.status = ?1 and (c.user = ?2 or c.participant_sequence in (?3))", nativeQuery = true)
+    Integer countMyConference(Integer status, Integer user, List<Integer> participantSequence);
 
 }

@@ -24,5 +24,7 @@ public class Room implements Serializable {
     private Integer capacity;
     private String catalogue;
     private Integer flag;
-    private Integer building;
+    @OneToOne
+    @JoinColumn(name = "building", referencedColumnName = "buildingid")
+    private Building building;
 }
