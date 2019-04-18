@@ -14,21 +14,21 @@ public interface QuickCheckService {
     /**
      * 获取符合快速查看的会议列表
      *
-     * @param buildingId 建筑编号
+     * @param building   建筑信息
      * @param roomId     会议室编号
      * @return 会议列表
      */
-    List<Room> getConferenceList(Integer buildingId, Integer roomId);
+    List<Room> getConferenceList(Building building, Integer roomId);
 
     /**
      * 将获取的会议室及其列表处理成会议室的占用时间段
      *
      * @param date       日期限制
-     * @param buildingId 楼宇编号
+     * @param building   楼宇信息
      * @param roomId     会议室编号
      * @return 占用时间段列表
      */
-    List<RoomTime> handleRoomTime(String date, Integer buildingId, Integer roomId);
+    List<RoomTime> handleRoomTime(String date, Building building, Integer roomId);
 
     /**
      * 返回所有的楼宇

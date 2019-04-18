@@ -87,8 +87,8 @@ public class RoomController {
             @ApiResponse(code = 200, message = "请求成功")
     })
     @GetMapping(value = "list")
-    public Object getList(String date, Integer buildingID, Integer roomID) {
-        List<RoomTime> roomTimeList = quickCheckService.handleRoomTime(date, buildingID, roomID);
+    public Object getList(String date, Building building, Integer roomID) {
+        List<RoomTime> roomTimeList = quickCheckService.handleRoomTime(date, building, roomID);
         if (roomTimeList == null) {
             return new FailureInfo(6001, "处理房间填充失败！");
         } else {
@@ -97,8 +97,8 @@ public class RoomController {
     }
 
     @GetMapping(value = "list/pre")
-    public Object listPre(Integer buildingID, Integer roomID) {
-        List<Room> roomList = quickCheckService.getConferenceList(buildingID, roomID);
+    public Object listPre(Building building, Integer roomID) {
+        List<Room> roomList = quickCheckService.getConferenceList(building, roomID);
         if(roomList == null) {
             return new FailureInfo(6002, "处理房间预处理失败！");
         } else {

@@ -55,20 +55,20 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
 
 
     @Override
-    public List<Room> getConferenceList(Integer buildingId, Integer roomId) {
+    public List<Room> getConferenceList(Building building, Integer roomId) {
         List<Room> rooms = new ArrayList<>();
         /*if-else进行输入判断，若不符合要求则返回null*/
         if (roomId == -1) {
-            if (buildingId == -1) {
+            if (building.getBuildingID() == -1) {
                 /*只有日期条件*/
                 /*获取会议室和会议信息*/
                 rooms = (List<Room>) roomRepository.findAll();
             } else {
                 /*有日期条件和楼宇条件*/
                 /*获取会议室和会议信息*/
-                rooms = (List<Room>) roomRepository.getRoomsByBuilding(buildingId);
+                rooms = (List<Room>) roomRepository.getRoomsByBuilding(building);
             }
-        } else if (buildingId != -1) {
+        } else if (building.getBuildingID() != -1) {
             /*日期、楼宇、会议室三个条件都有*/
             /*获取会议室和会议信息*/
             rooms.add(roomRepository.getRoomByRoomID(roomId));
@@ -80,8 +80,8 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     }
 
     @Override
-    public List<RoomTime> handleRoomTime(String date, Integer buildingId, Integer roomId) {
-        if (date == null || buildingId == null || roomId == null) {
+    public List<RoomTime> handleRoomTime(String date, Building building, Integer roomId) {
+        if (date == null || building == null || roomId == null) {
             return null;
         }
         /*规定正则表达式*/
@@ -106,7 +106,7 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        List<Room> roomList = getConferenceList(buildingId, roomId);
+        List<Room> roomList = getConferenceList(building, roomId);
         if (roomList == null) {
             return null;
         }
