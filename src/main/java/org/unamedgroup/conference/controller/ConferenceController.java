@@ -100,4 +100,20 @@ public class ConferenceController {
             return new SuccessInfo(conferenceList);
         }
     }
+
+    @GetMapping(value = "/total")
+    public Object getTotal() {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+        String phone = JWTUtil.getPhoneNumber(subject.getPrincipal().toString());
+        Integer userId = userRepository.getUserByPhoneNumber(phone).getUserID();
+        Integer total = myConferenceService.getMyConferenceTotal(userId);
+        if(total==null) {
+            return new FailureInfo(3102, "会议信息总数拉取失败");
+        } else {
+            return new SuccessInfo(total);
+        }
+    }
 }
