@@ -9,6 +9,7 @@ import org.unamedgroup.conference.entity.Building;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
 import org.unamedgroup.conference.entity.temp.RoomTime;
+import org.unamedgroup.conference.service.GeneralService;
 import org.unamedgroup.conference.service.GuideQueryService;
 import org.unamedgroup.conference.service.QuickCheckService;
 import org.unamedgroup.conference.service.RelevanceQueryService;
@@ -31,13 +32,12 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
 
     @Autowired
     RoomRepository roomRepository;
-
     @Autowired
     BuildingRepository buildingRepository;
-
     @Autowired
     ConferenceRepository conferenceRepository;
-
+    @Autowired
+    GeneralService generalService;
 
     @Override
     public List<Room> getRoomsByBuildingID(Integer buildingID) {
@@ -314,13 +314,7 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     @Override
     public List<Integer> getFreeRoomIDByDate(Date start, Date end) {
         try {
-            //会议在当前时间段前开始
-            List<Conference> conferenceBusyList1 = conferenceRepository.findConferencesByStartTimeBeforeAndEndTimeAfter(start, start);
-            //会议在当前时间段后结束
-            List<Conference> conferenceBusyList2 = conferenceRepository.findConferencesByStartTimeBeforeAndEndTimeAfter(end, end);
-
-            //两者求并集
-            conferenceBusyList1.addAll(conferenceBusyList2);
+            List<Conference> conferenceBusyList1 = generalService.getConferencesByDate(start, end);
 
             //将房间根据房间号映射为Map
             List<Room> roomList = roomRepository.findAll();
@@ -331,7 +325,7 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
 
             //将有会的房间处理掉，然后遍历Map形成返回列表
             for (int i = 0; i < conferenceBusyList1.size(); i++) {
-                roomMap.remove(conferenceBusyList1.get(i).getRoom());
+                roomMap.remove(conferenceBusyList1.get(i).getRoom().getRoomID());
             }
             List<Integer> toReturnList = new ArrayList<Integer>();
             for (Map.Entry<Integer, Room> i : roomMap.entrySet()) {

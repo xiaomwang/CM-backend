@@ -100,14 +100,26 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
     List<Conference> findConferencesByStartTimeBeforeAndEndTimeAfter(Date date, Date date1);
 
     /**
-     * 查询某个时间但是否在会议的时间内（闭区间）
+     * 确定特定时间是否有会的数据库查询系列（1）
+     * ST<= date & date <=ET
+     * ST<= date1 & date1 <=ET
+     * ST<= date & date1 <=ET
      *
-     * @param date 时间点
-     * @param date_same 时间点，根据JPA要求要传两个参数
-     * @return
+     * @param date  时间点
+     * @param date1 时间点1
+     * @return 会议列表
      */
-    List<Conference> findConferencesByStartTimeLessThanEqualAndEndTimeGreaterThanEqual(Date date, Date date_same);
+    List<Conference> findConferencesByStartTimeLessThanEqualAndEndTimeGreaterThanEqual(Date date, Date date1);
 
+    /**
+     * 确定特定时间是否有会的数据库查询系列（2）
+     * ST>= date & date1 >=ET
+     *
+     * @param date  时间点
+     * @param date1 时间点1
+     * @return 会议列表
+     */
+    List<Conference> findConferencesByStartTimeGreaterThanEqualAndEndTimeLessThanEqual(Date date, Date date1);
 
     /**
      * 根据会议状态获取会议信息列表
@@ -119,11 +131,12 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
 
     /**
      * 按照升序查询与用户相关的所有会议
-     * @param status 会议状态
-     * @param user 用户id
+     *
+     * @param status              会议状态
+     * @param user                用户id
      * @param participantSequence 与会人序列
-     * @param pageNumber 起始索引
-     * @param pageSize 每页容量
+     * @param pageNumber          起始索引
+     * @param pageSize            每页容量
      * @return 会议列表
      */
     @Modifying

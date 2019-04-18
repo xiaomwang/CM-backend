@@ -2,7 +2,8 @@ package org.unamedgroup.conference.feature.entity.util;
 
 import com.arcsoft.face.Rect;
 import org.unamedgroup.conference.feature.entity.ImageInfo;
-import java.util.Base64.Decoder;
+import sun.misc.BASE64Decoder;
+
 
 import javax.imageio.ImageIO;
 import java.awt.color.ColorSpace;
@@ -128,35 +129,35 @@ public class ImageUtil {
      * @param imgStr
      * @return inputStream
      */
-//    public static InputStream base64InputStream(String imgStr){
-//        if(imgStr==null){
-//            System.err.println("base64编码图片信息为空");
-//            return null;
-//        }
-//        BASE64Decoder decoder = new BASE64Decoder();
-//        byte[] bytes;
-//        try{
-//            //jpeg格式的图片
-//            if (imgStr.indexOf("data:image/jpeg;base64,") != -1) {
-//                bytes = decoder.decodeBuffer(imgStr.replaceAll("data:image/jpeg;base64,", ""));
-//            } else {
-//                //png格式的图片
-//                if (imgStr.indexOf("data:image/png;base64,") != -1) {
-//                    bytes = decoder.decodeBuffer(imgStr.replaceAll("data:image/png;base64,", ""));
-//                } else {
-//                    //jpg格式的图片
-//                    bytes = decoder.decodeBuffer(imgStr.replaceAll("data:image/jpg;base64,", ""));
-//                }
-//            }
-//             for (int i = 0; i < bytes.length; ++i) {
-//                 if (bytes[i] < 0){
-//                     bytes[i] += 256;
-//                 }
-//             }
-//        }catch(Exception e){
-//            System.err.println("base64图片转换失败，错误信息： " + e.toString());
-//            return null;
-//        }
-//        return new ByteArrayInputStream(bytes);
-//    }
+    public static InputStream base64InputStream(String imgStr){
+        if(imgStr==null){
+            System.err.println("base64编码图片信息为空");
+            return null;
+        }
+        BASE64Decoder decoder = new BASE64Decoder();
+        byte[] bytes;
+        try{
+            //jpeg格式的图片
+            if (imgStr.indexOf("data:image/jpeg;base64,") != -1) {
+                bytes = decoder.decodeBuffer(imgStr.replaceAll("data:image/jpeg;base64,", ""));
+            } else {
+                //png格式的图片
+                if (imgStr.indexOf("data:image/png;base64,") != -1) {
+                    bytes = decoder.decodeBuffer(imgStr.replaceAll("data:image/png;base64,", ""));
+                } else {
+                    //jpg格式的图片
+                    bytes = decoder.decodeBuffer(imgStr.replaceAll("data:image/jpg;base64,", ""));
+                }
+            }
+             for (int i = 0; i < bytes.length; ++i) {
+                 if (bytes[i] < 0){
+                     bytes[i] += 256;
+                 }
+             }
+        }catch(Exception e){
+            System.err.println("base64图片转换失败，错误信息： " + e.toString());
+            return null;
+        }
+        return new ByteArrayInputStream(bytes);
+    }
 }

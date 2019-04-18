@@ -1,5 +1,6 @@
 package org.unamedgroup.conference.service;
 
+import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
 
 import java.util.Date;
