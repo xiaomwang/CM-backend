@@ -59,6 +59,15 @@ public class ConferenceServiceImpl implements MyConferenceService, ConferenceMan
     }
 
     @Override
+    public Integer getMyConferenceTotal(int userId) {
+        List<Integer> participants = participantsRepository.findSequenceIDByUserID(userId);
+        if(participants.size()==0) {
+            participants.add(-1);
+        }
+        return conferenceRepository.countMyConference(1, userId, participants);
+    }
+
+    @Override
     public List<Conference> getNotStartConferenceList(Integer status) {
         return conferenceRepository.getConferencesByStatus(0);
     }

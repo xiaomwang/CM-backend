@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
 
@@ -128,5 +129,9 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
     @Modifying
     @Query(value = "select * from conference c where c.status = ?1 and (c.user = ?2 or c.participant_sequence in (?3)) order by c.start_time ASC limit ?4,?5", nativeQuery = true)
     List<Conference> findMyConference(Integer status, Integer user, List<Integer> participantSequence, Integer pageNumber, Integer pageSize);
+
+    @Transactional
+    @Query(value = "select count(*) from conference c where c.status = ?1 and (c.user = ?2 or c.participant_sequence in (?3))", nativeQuery = true)
+    Integer countMyConference(Integer status, Integer user, List<Integer> participantSequence);
 
 }
