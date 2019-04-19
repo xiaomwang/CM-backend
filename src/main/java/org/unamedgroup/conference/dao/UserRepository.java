@@ -38,4 +38,12 @@ public interface UserRepository extends CrudRepository<User, Integer> {
      * @return 用户实体
      */
     User getUserByPhoneNumber(String phoneNumber);
+
+    /**
+     * 根据传入的部分姓名匹配用户实体
+     *
+     * @param realName 用户的真实姓名（部分）
+     * @return 用户实体列表
+     */
+    List<User> findUsersByRealNameLike(String realName);
 }
