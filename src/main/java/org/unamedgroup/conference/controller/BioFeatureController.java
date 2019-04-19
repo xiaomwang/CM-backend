@@ -45,6 +45,7 @@ public class BioFeatureController {
             }
             return 0;
         } catch (Exception e) {
+            e.printStackTrace();
             System.err.println("发生错误，请检查：");
             e.toString();
         }

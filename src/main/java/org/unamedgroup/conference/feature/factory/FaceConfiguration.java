@@ -15,8 +15,10 @@ import org.springframework.stereotype.Component;
 public class FaceConfiguration {
 
     public static FaceEngine create() {
-        String appId = "Bbvyu5GeUE8eaBhyLsNcp48RNJ4mBnFHHKAuAgRpJvDT";
-        String sdkKey = "6qjPs9Ey8zBbshQnkc3jpXLMXf8jMtNbXQpnCYSAQuqJ";
+//        String appId = "Bbvyu5GeUE8eaBhyLsNcp48RNJ4mBnFHHKAuAgRpJvDT";
+//        String sdkKey = "6qjPs9Ey8zBbshQnkc3jpXLMXf8jMtNbXQpnCYSAQuqJ";
+        String appId = "3NapBq4mgBbQAwwiSPyLDsB4mevNYtUxR8m2YXx4PYur";
+        String sdkKey = "j4UamkGDadxoeSnkkMWMSKfbrR7pCajXmLhhg4rLGjV";
 
         FaceEngine faceEngine = new FaceEngine();
         //激活引擎
