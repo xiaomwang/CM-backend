@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.unamedgroup.conference.dao.ConferenceRepository;
 import org.unamedgroup.conference.dao.ParticipantsRepository;
+import org.unamedgroup.conference.dao.UserRepository;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Participants;
+import org.unamedgroup.conference.entity.User;
+import org.unamedgroup.conference.entity.temp.ReturnUser;
 import org.unamedgroup.conference.service.ConferenceManageService;
 import org.unamedgroup.conference.service.MyConferenceService;
 
@@ -22,6 +25,8 @@ public class ConferenceServiceImpl implements MyConferenceService, ConferenceMan
     ConferenceRepository conferenceRepository;
     @Autowired
     ParticipantsRepository participantsRepository;
+    @Autowired
+    UserRepository userRepository;
 
     @Override
     public List<Conference> getConferencesByProposer(int userId) {
@@ -37,16 +42,6 @@ public class ConferenceServiceImpl implements MyConferenceService, ConferenceMan
         }
         return conferenceList;
     }
-
-//    @Override
-//    public List<Conference> getMyConferenceList(int userId) {
-//        List<Conference> listProposer = getConferencesByProposer(userId);
-//        List<Conference> listParticipant = getConferencesByParticipant(userId);
-//        if(listParticipant!=null) {
-//            listProposer.addAll(listProposer.size(),listParticipant);
-//        }
-//        return listProposer;
-//    }
 
     @Override
     public List<Conference> getMyConferenceList(int userId, Integer pageCurrent, Integer pageSize) {
@@ -71,4 +66,25 @@ public class ConferenceServiceImpl implements MyConferenceService, ConferenceMan
     public List<Conference> getNotStartConferenceList(Integer status) {
         return conferenceRepository.getConferencesByStatus(0);
     }
+
+
+    @Override
+    public List<ReturnUser> getUserListByName(String realName) {
+        try {
+            List<User> userList = userRepository.findUsersByRealNameLike("%" + realName + "%");
+            if (userList.size() == 0) {
+                return null;
+            }
+            List<ReturnUser> returnUsersList = new ArrayList<ReturnUser>();
+            for (int i = 0; i < userList.size(); i++) {
+                ReturnUser returnUser = new ReturnUser(userList.get(i));
+                returnUsersList.add(returnUser);
+            }
+            return returnUsersList;
+        } catch (Exception e) {
+            System.err.println("根据姓名匹配用户遇到错误，详细信息：" + e.toString());
+            return null;
+        }
+    }
+
 }
