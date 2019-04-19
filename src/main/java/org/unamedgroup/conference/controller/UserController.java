@@ -13,6 +13,7 @@ import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.security.JWTUtil;
 import org.unamedgroup.conference.security.UnauthorizedException;
+import org.unamedgroup.conference.service.MyConferenceService;
 
 import java.util.List;
 
@@ -31,9 +32,10 @@ public class UserController {
 
     @Autowired
     UserRepository userRepository;
-
     @Autowired
     ConferenceRepository conferenceRepository;
+    @Autowired
+    MyConferenceService myConferenceService;
 
     @RequestMapping(value = "/myConferences", method = RequestMethod.GET)
     @ResponseBody
@@ -103,5 +105,22 @@ public class UserController {
         }
         User user = userRepository.getUserByPhoneNumber(JWTUtil.getPhoneNumber(token));
         return new SuccessInfo(user.getUserID());
+    }
+
+
+    @RequestMapping(value = "/userList", method = RequestMethod.GET)
+    @ResponseBody
+    public Object getUserListByName(String realName) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+
+        List list = myConferenceService.getUserListByName(realName);
+        if (list == null) {
+            return new FailureInfo(7002, "根据姓名匹配用户失败！");
+        } else {
+            return new SuccessInfo(list);
+        }
     }
 }
