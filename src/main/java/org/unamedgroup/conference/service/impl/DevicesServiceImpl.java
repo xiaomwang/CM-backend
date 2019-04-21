@@ -1,5 +1,6 @@
 package org.unamedgroup.conference.service.impl;
 
+import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.unamedgroup.conference.dao.ConferenceRepository;
@@ -29,6 +30,8 @@ public class DevicesServiceImpl implements DevicesShowService {
     UserRepository userRepository;
     @Autowired
     RoomRepository roomRepository;
+    @Autowired
+    GeneralServiceImpl generalService;
 
     @Override
     public Integer getCurrentConferenceID(Integer roomID) {
@@ -36,10 +39,10 @@ public class DevicesServiceImpl implements DevicesShowService {
         Date current = new Date();
 
         try {
-            conferenceList = conferenceRepository.getConferencesByStartTimeBeforeAndEndTimeAfter(current, current);
+            conferenceList = generalService.getConferencesByDate(current, current);
             for (int i = 0; i < conferenceList.size(); i = i + 1) {
                 Conference conference = conferenceList.get(i);
-                if (roomID.equals(conference.getRoom()) && conference.getStatus() == 1) {
+                if (roomID.equals(conference.getRoom().getRoomID()) && conference.getStatus() == 1) {
                     return conference.getConferenceID();
                 }
             }
