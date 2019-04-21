@@ -21,5 +21,5 @@ public interface GuideQueryService {
      * @param end   结束时间
      * @return 会议室列表
      */
-    public List<Integer> getFreeRoomIDByDate(Date start, Date end);
+    public List<Room> getFreeRoomIDByDate(Date start, Date end);
 }
