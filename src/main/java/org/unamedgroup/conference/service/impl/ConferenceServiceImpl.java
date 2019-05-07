@@ -38,7 +38,11 @@ public class ConferenceServiceImpl implements MyConferenceService, ConferenceMan
         List<Conference> conferenceList = new ArrayList<>();
         List<Participants> participants = participantsRepository.findByUserID(userId);
         for(Participants participant : participants) {
-            conferenceList.add(conferenceRepository.getConferenceByParticipantSequenceAndStatus(participant.getSequenceID(), 1));
+//            Conference conference = conferenceRepository.getConferenceByConferenceID(participant.getSequenceID());
+//            if (conference.getStatus() == 1){
+//                conferenceList.add(conference);
+//            }
+            conferenceList.add(conferenceRepository.getConferenceByConferenceIDAndStatus(participant.getSequenceID(), 1));
         }
         return conferenceList;
     }

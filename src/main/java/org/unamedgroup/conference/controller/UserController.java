@@ -111,11 +111,6 @@ public class UserController {
     @RequestMapping(value = "/userList", method = RequestMethod.GET)
     @ResponseBody
     public Object getUserListByName(String realName) {
-        Subject subject = SecurityUtils.getSubject();
-        if (subject.isAuthenticated() == false) {
-            return new FailureInfo();
-        }
-
         List list = myConferenceService.getUserListByName(realName);
         if (list == null) {
             return new FailureInfo(7002, "根据姓名匹配用户失败！");

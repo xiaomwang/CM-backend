@@ -71,13 +71,13 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
     List<Conference> findByRoomAndStatusAndEndTimeBetweenAndStartTimeBefore(Room id, Integer status, Date start, Date end, Date date);
 
     /**
-     * 根据参与者序列号ID查询会议信息
+     * 根据会议号和会议状态查询会议信息
      *
-     * @param participantSequence 参与者序列号
-     * @param status              会议状态
+     * @param conferenceID 会议号
+     * @param status       会议状态
      * @return 会议信息
      */
-    Conference getConferenceByParticipantSequenceAndStatus(Integer participantSequence, Integer status);
+    Conference getConferenceByConferenceIDAndStatus(Integer conferenceID, Integer status);
 
     /**
      * 根据用户ID以及会议状态来获取用户所有的会议
