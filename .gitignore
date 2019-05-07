@@ -10,6 +10,9 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+# For macos
+*.DS_Store
+
 # Package Files #
 *.war
 *.nar
@@ -25,3 +28,4 @@ hs_err_pid*
 *.iml
 .idea/
 target/
+*.yml
