@@ -33,5 +33,6 @@ public class Conference implements Serializable {
     private Integer user;
     private Integer number;
     private Integer status;
-//    private Integer participantSequence;
+    @GeneratedValue
+    private Integer participantSequence;
 }
