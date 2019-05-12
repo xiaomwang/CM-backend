@@ -1,9 +1,14 @@
 package org.unamedgroup.conference.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.MachineEntity;
+import org.unamedgroup.conference.entity.temp.RoomTime;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.service.DevicesShowService;
 import org.unamedgroup.conference.service.GeneralService;
@@ -18,6 +23,7 @@ import java.util.Date;
  * @date 2019/03/28
  */
 
+@Api(value = "显示屏 API", description = "显示屏操作接口", protocols = "http")
 @CrossOrigin
 @RestController
 @RequestMapping("/machine")
@@ -28,6 +34,12 @@ public class DisplayController {
     @Autowired
     GeneralService generalService;
 
+    @ApiOperation(value = "获取显示屏信息api", protocols = "http"
+            , produces = "application/json", consumes = "application/json"
+            , response = MachineEntity.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roomID", value = "房间编号", required = true, dataType = "int", paramType = "query")
+    })
     @RequestMapping(value = "/info", method = RequestMethod.GET)
     @ResponseBody
     public Object getAllInfo(Integer roomID) {

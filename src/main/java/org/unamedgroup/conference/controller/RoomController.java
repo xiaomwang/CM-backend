@@ -26,7 +26,7 @@ import java.util.List;
  * @date 2019/03/12
  */
 
-@Api(value = "会议室操作 API", description = "会议室操作 API", position = 100, protocols = "http")
+@Api(value = "会议室 API", description = "会议室操作接口", protocols = "http")
 @CrossOrigin
 @RestController
 @RequestMapping("/room")
@@ -40,6 +40,13 @@ public class RoomController {
     @Autowired
     RelevanceQueryService relevanceQueryService;
 
+    @ApiOperation(value = "获取空闲会议室api", protocols = "http"
+            , produces = "application/json", consumes = "application/json"
+            , response = Integer.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "start", value = "开始时间", required = true, dataType = "Date", paramType = "query"),
+            @ApiImplicitParam(name = "end", value = "结束时间", required = true, dataType = "Date", paramType = "query"),
+    })
     @RequestMapping(value = "/free", method = RequestMethod.GET)
     @ResponseBody
     public Object getFreeRoom(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date start, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date end) {
@@ -50,6 +57,9 @@ public class RoomController {
         }
     }
 
+    @ApiOperation(value = "当天空闲会议室信息查询api", protocols = "http"
+            , produces = "application/json", consumes = "application/json"
+            , response = Integer.class)
     @RequestMapping(value = "/freeRoomNumber", method = RequestMethod.GET)
     @ResponseBody
     public Object getFreeRoomNumberToday() {
@@ -83,9 +93,6 @@ public class RoomController {
             @ApiImplicitParam(name = "buildingID", value = "楼宇编号", required = false, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "roomID", value = "房间编号", required = false, dataType = "int", paramType = "query")
     })
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "请求成功")
-    })
     @GetMapping(value = "list")
     public Object getList(String date, Building building, Integer roomID) {
         List<RoomTime> roomTimeList = quickCheckService.handleRoomTime(date, building, roomID);
@@ -96,16 +103,29 @@ public class RoomController {
         }
     }
 
+    @ApiOperation(value = "会议室列表预处理api", protocols = "http"
+            , produces = "application/json", consumes = "application/json"
+            , response = Room.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "buildingID", value = "楼宇编号", required = false, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "roomID", value = "房间编号", required = false, dataType = "int", paramType = "query")
+    })
     @GetMapping(value = "list/pre")
     public Object listPre(Building building, Integer roomID) {
         List<Room> roomList = quickCheckService.getConferenceList(building, roomID);
         if(roomList == null) {
-            return new FailureInfo(6002, "处理房间预处理失败！");
+            return new FailureInfo(6004, "处理房间预处理失败！");
         } else {
             return new SuccessInfo(roomList);
         }
     }
 
+    @ApiOperation(value = "会议室级联查询api", protocols = "http"
+            , produces = "application/json", consumes = "application/json"
+            , response = Room.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "buildingID", value = "楼宇编号", required = true, dataType = "int", paramType = "query"),
+    })
     @GetMapping(value = "list/building")
     public Object listByBuilding(Building building) {
         List<Room> roomList = relevanceQueryService.roomByBuilding(building);
@@ -116,6 +136,12 @@ public class RoomController {
         }
     }
 
+    @ApiOperation(value = "获取会议室实体api", protocols = "http"
+            , produces = "application/json", consumes = "application/json"
+            , response = Room.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roomID", value = "房间编号", required = true, dataType = "int", paramType = "query")
+    })
     @RequestMapping(value = "/roomObject", method = RequestMethod.GET)
     @ResponseBody
     public Object getRoomObject(Integer roomID) {
