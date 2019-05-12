@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * GeneralServiceImpl
  *
- * @author liumengxiao
+ * @author liumengxiao、zhoutao
  * @date 2019/04/09
  */
 
@@ -63,5 +63,17 @@ public class GeneralServiceImpl implements GeneralService {
         }
     }
 
+    @Override
+    public List<Conference> getConferencesByLocationAndDate(Integer roomID, Date now, Date date){
+        List<Conference> conferenceList = null;
+        try{
+            // 获取会议信息
+            conferenceList = conferenceRepository.findByRoomAndStatusAndDate(roomRepository.getRoomByRoomID(roomID), 1, now, date);
+        }catch(Exception e){
+            System.err.println("获取该会议室的会议失败！！！");
+            System.err.println(e.toString());
+        }
+        return conferenceList;
+    }
 
 }

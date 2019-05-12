@@ -9,7 +9,7 @@ import java.util.List;
  * 通用服务类
  * 提供一些可能被公共调用的方法
  *
- * @author liumengxiao
+ * @author liumengxiao、zhoutao
  * @date 2019年04月09日
  */
 public interface GeneralService {
@@ -29,5 +29,14 @@ public interface GeneralService {
      * @return 会议列表
      */
     public List<Conference> getConferencesByDate(Date start, Date end);
+
+    /**
+     *  根据时间点以及地点查看会议
+     *
+     * @param roomID
+     * @param date
+     * @return 会议列表
+     */
+    public List<Conference> getConferencesByLocationAndDate(Integer roomID, Date now, Date date);
 
 }
