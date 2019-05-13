@@ -40,4 +40,11 @@ public interface ParticipantsRepository extends CrudRepository<Participants, Int
     @Override
     @Transactional
     Participants save(Participants participants);
+
+    /**
+     * 查询会议与会人信息
+     * @param conferenceID 会议编号
+     * @return 与会人信息列表
+     */
+    List<Participants> findBySequenceID(Integer conferenceID);
 }

@@ -4,7 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.unamedgroup.conference.dao.ParticipantsRepository;
+import org.unamedgroup.conference.dao.UserRepository;
 import org.unamedgroup.conference.entity.Participants;
+import org.unamedgroup.conference.entity.User;
+import org.unamedgroup.conference.entity.temp.ReturnUser;
 import org.unamedgroup.conference.service.ManagingAttendeesService;
 
 import java.util.ArrayList;
@@ -18,6 +21,9 @@ import java.util.List;
 public class ParticipantsServiceImpl implements ManagingAttendeesService {
     @Autowired
     ParticipantsRepository participantsRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Override
     @Transactional
@@ -39,5 +45,17 @@ public class ParticipantsServiceImpl implements ManagingAttendeesService {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<ReturnUser> getParticipants(Integer conferenceID) {
+        List<Participants> participantsList = participantsRepository.findBySequenceID(conferenceID);
+        List<ReturnUser> userList = new ArrayList<>();
+        for(Participants participants : participantsList) {
+            User user = userRepository.getUserByUserID(participants.getUserID());
+            ReturnUser returnUser = new ReturnUser(user);
+            userList.add(returnUser);
+        }
+        return userList;
     }
 }

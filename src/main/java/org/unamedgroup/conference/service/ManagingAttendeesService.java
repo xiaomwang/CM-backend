@@ -1,6 +1,7 @@
 package org.unamedgroup.conference.service;
 
 import org.unamedgroup.conference.entity.Participants;
+import org.unamedgroup.conference.entity.temp.ReturnUser;
 
 import java.util.List;
 
@@ -10,4 +11,7 @@ import java.util.List;
  */
 public interface ManagingAttendeesService {
     Boolean modifyParticipants(String userIds, Integer conferenceID);
+
+    List<ReturnUser> getParticipants(Integer conferenceID);
+
 }

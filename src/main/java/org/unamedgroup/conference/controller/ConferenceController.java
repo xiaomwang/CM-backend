@@ -175,5 +175,17 @@ public class ConferenceController {
         return new SuccessInfo("与会人修改成功!");
     }
 
-
+    @GetMapping(value = "participants")
+    public Object participantsGet(Integer conferenceID) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+        try {
+            return new SuccessInfo(managingAttendeesService.getParticipants(conferenceID));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new FailureInfo(3007, "会议与会人列表查询失败!");
+        }
+    }
 }
