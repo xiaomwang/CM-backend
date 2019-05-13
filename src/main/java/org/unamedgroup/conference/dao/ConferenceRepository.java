@@ -1,18 +1,18 @@
 package org.unamedgroup.conference.dao;
 
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-import org.unamedgroup.conference.entity.Conference;
-import org.unamedgroup.conference.entity.Room;
+        import org.springframework.data.jpa.repository.Modifying;
+        import org.springframework.data.jpa.repository.Query;
+        import org.springframework.data.repository.CrudRepository;
+        import org.springframework.stereotype.Repository;
+        import org.springframework.transaction.annotation.Transactional;
+        import org.unamedgroup.conference.entity.Conference;
+        import org.unamedgroup.conference.entity.Room;
 
-import java.util.Date;
-import java.util.List;
+        import java.util.Date;
+        import java.util.List;
 
 /**
- * @Author: 白振宇
+ * @Author: 白振宇、zhoutao
  * @Date： 2019/3/14 8:12
  */
 @Repository
@@ -146,5 +146,17 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
     @Transactional
     @Query(value = "select count(*) from conference c where c.status = ?1 and (c.user = ?2 or c.participant_sequence in (?3))", nativeQuery = true)
     Integer countMyConference(Integer status, Integer user, List<Integer> participantSequence);
+
+    /**
+     * 根据会议室、会议状态、时间点查看会议, 用于人脸识别
+     *
+     * @param id
+     * @param status
+     * @param date
+     * @return
+     */
+    @Modifying
+    @Query(value = "select * from conference c where c.room = ?1 and c.status = ?2 and c.start_time between (?3) and  (?4)", nativeQuery = true)
+    List<Conference> findByRoomAndStatusAndDate(Room id, Integer status, Date now, Date date);
 
 }
