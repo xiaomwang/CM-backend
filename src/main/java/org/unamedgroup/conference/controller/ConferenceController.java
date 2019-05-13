@@ -1,5 +1,9 @@
 package org.unamedgroup.conference.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +12,12 @@ import org.unamedgroup.conference.dao.ConferenceRepository;
 import org.unamedgroup.conference.dao.UserRepository;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
+import org.unamedgroup.conference.entity.temp.RoomTime;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.security.JWTToken;
 import org.unamedgroup.conference.security.JWTUtil;
 import org.unamedgroup.conference.service.GeneralService;
+import org.unamedgroup.conference.service.ManagingAttendeesService;
 import org.unamedgroup.conference.service.MyConferenceService;
 
 import java.util.List;
@@ -23,6 +29,7 @@ import java.util.List;
  * @Date： 2019/3/15 14:08
  */
 
+@Api(value = "会议 API", description = "会议操作接口", protocols = "http")
 @CrossOrigin
 @RestController
 @RequestMapping(value = "conference")
@@ -36,6 +43,8 @@ public class ConferenceController {
     UserRepository userRepository;
     @Autowired
     GeneralService generalService;
+    @Autowired
+    ManagingAttendeesService managingAttendeesService;
 
     /**
      * 预定会议
@@ -45,6 +54,12 @@ public class ConferenceController {
      * @return 预定是否成功
      * @author liumengxiao
      */
+    @ApiOperation(value = "预定会议api", protocols = "http"
+            , produces = "application/json", consumes = "application/json"
+            , response = String.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "conference", value = "日期", required = true, dataType = "Conference", paramType = "query"),
+    })
     @RequestMapping(value = "/order", method = RequestMethod.POST)
     @ResponseBody
     public Object orderConference(Conference conference) {
@@ -81,6 +96,7 @@ public class ConferenceController {
         }
     }
 
+    @ApiOperation(value = "我的会议信息api")
     @GetMapping(value = "/details")
     public Object getDetatils(Integer pageCurrent, Integer pageSize) {
         Subject subject = SecurityUtils.getSubject();
@@ -97,6 +113,7 @@ public class ConferenceController {
         }
     }
 
+    @ApiOperation(value = "我的会议信息总条数api")
     @GetMapping(value = "/total")
     public Object getTotal() {
         Subject subject = SecurityUtils.getSubject();
@@ -113,6 +130,7 @@ public class ConferenceController {
         }
     }
 
+    @ApiOperation(value = "取消会议api")
     @RequestMapping(value = "/cancel", method = RequestMethod.GET)
     @ResponseBody
     public Object cancel(Integer conferenceID) {
@@ -127,6 +145,7 @@ public class ConferenceController {
         }
     }
 
+    @ApiOperation(value = "驳回会议api")
     @RequestMapping(value = "/reject", method = RequestMethod.GET)
     @ResponseBody
     public Object reject(Integer conferenceID) {
@@ -139,6 +158,21 @@ public class ConferenceController {
             System.err.println("会议驳回出错！");
             return new FailureInfo(3005, "会议驳回失败，请检查会议是否存在！");
         }
+    }
+
+    @PostMapping(value = "/participants")
+    public Object participants(String userIdList, Integer conferenceID) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+        try {
+            managingAttendeesService.modifyParticipants(userIdList, conferenceID);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new FailureInfo(3006, "与会人修改失败，请重新尝试!");
+        }
+        return new SuccessInfo("与会人修改成功!");
     }
 
 

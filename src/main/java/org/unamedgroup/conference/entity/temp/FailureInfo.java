@@ -1,6 +1,9 @@
 package org.unamedgroup.conference.entity.temp;
 
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.unamedgroup.conference.security.UnauthorizedException;
 
 /**
  * FailureInfo
@@ -22,5 +25,14 @@ public class FailureInfo {
     public FailureInfo(Integer status, String message) {
         this.status = status;
         this.message = message;
+        try {
+            if (status == -1) {
+                throw new UnauthorizedException(message);
+            }
+        } catch (Exception e) {
+            System.err.println("用户鉴权失败！");
+            System.err.println(message);
+
+        }
     }
 }

@@ -1,6 +1,8 @@
 package org.unamedgroup.conference.controller;
 
 import com.auth0.jwt.JWT;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import java.util.List;
  * @date 2019/03/12
  */
 
+@Api(value = "用户 API", description = "用户操作接口", protocols = "http")
 @CrossOrigin
 @RestController
 @RequestMapping("/user")
@@ -37,6 +40,7 @@ public class UserController {
     @Autowired
     MyConferenceService myConferenceService;
 
+    @ApiOperation(value = "我的会议信息api")
     @RequestMapping(value = "/myConferences", method = RequestMethod.GET)
     @ResponseBody
     public Object getMyConferences(Integer userID) {
@@ -57,6 +61,7 @@ public class UserController {
         }
     }
 
+    @ApiOperation(value = "用户登录api")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public Object login(String phoneNumber, String password) {
@@ -89,6 +94,7 @@ public class UserController {
         return new SuccessInfo("success!");
     }
 
+    @ApiOperation(value = "获取用户IDapi")
     @RequestMapping(value = "/userID", method = RequestMethod.GET)
     @ResponseBody
     public Object getUserID() {
@@ -108,6 +114,7 @@ public class UserController {
     }
 
 
+    @ApiOperation(value = "用户姓名模糊匹配api")
     @RequestMapping(value = "/userList", method = RequestMethod.GET)
     @ResponseBody
     public Object getUserListByName(String realName) {
