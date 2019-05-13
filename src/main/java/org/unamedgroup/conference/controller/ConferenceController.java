@@ -17,6 +17,7 @@ import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.security.JWTToken;
 import org.unamedgroup.conference.security.JWTUtil;
 import org.unamedgroup.conference.service.GeneralService;
+import org.unamedgroup.conference.service.ManagingAttendeesService;
 import org.unamedgroup.conference.service.MyConferenceService;
 
 import java.util.List;
@@ -42,6 +43,8 @@ public class ConferenceController {
     UserRepository userRepository;
     @Autowired
     GeneralService generalService;
+    @Autowired
+    ManagingAttendeesService managingAttendeesService;
 
     /**
      * 预定会议
@@ -155,6 +158,21 @@ public class ConferenceController {
             System.err.println("会议驳回出错！");
             return new FailureInfo(3005, "会议驳回失败，请检查会议是否存在！");
         }
+    }
+
+    @PostMapping(value = "/participants")
+    public Object participants(String userIdList, Integer conferenceID) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+        try {
+            managingAttendeesService.modifyParticipants(userIdList, conferenceID);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new FailureInfo(3006, "与会人修改失败，请重新尝试!");
+        }
+        return new SuccessInfo("与会人修改成功!");
     }
 
 

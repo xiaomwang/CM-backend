@@ -3,6 +3,7 @@ package org.unamedgroup.conference.dao;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.unamedgroup.conference.entity.Participants;
 
 import java.util.List;
@@ -22,4 +23,21 @@ public interface ParticipantsRepository extends CrudRepository<Participants, Int
 
     @Query(value = "select p.sequenceID from Participants p where p.userID=?1")
     List<Integer> findSequenceIDByUserID(Integer userId);
+
+    /**
+     * 根据会议室id删除参与者记录
+     * @param conferenceID 会议室id
+     * @return 删除条数个数
+     */
+    @Transactional
+    Integer removeBySequenceID(Integer conferenceID);
+
+    /**
+     * 添加会议室id和对应的参与者id
+     * @param participants 参与者对象
+     * @return 保存记录条数
+     */
+    @Override
+    @Transactional
+    Participants save(Participants participants);
 }
