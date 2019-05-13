@@ -346,6 +346,47 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     }
 
     @Override
+    public List<Room> getAllRoom() {
+        return roomRepository.findAll();
+    }
+
+    /**
+     * 按房间在时间区间内房间的空闲指数进行排序，每半个小时空闲累积一个空闲指数
+     * @param start 开始时间
+     * @param end 结束时间
+     * @param roomList 房间列表
+     * @return 排序后的房间信息列表
+     */
+    @Override
+    public List<Room> sortRoomByFreeIndex(List<Room> roomList, Date start, Date end) {
+        Map<Integer, Room> roomMap = calculateRoomFreeIndex(roomList, start, end);
+        List<Room> rooms = transformRoom(roomMap);
+        return rooms;
+    }
+
+    /**
+     * 计算每个房间的空闲指数并存在TreeMap中（排序）
+     * @param roomList 房间列表
+     * @param start 开始时间
+     * @param end 结束时间
+     * @return 房间及其空闲指数的映射
+     */
+    private Map<Integer, Room> calculateRoomFreeIndex(List<Room> roomList, Date start, Date end) {
+        Map<Integer, Room> roomMap = new TreeMap<>();
+        return roomMap;
+    }
+
+    /**
+     * 将排序的空闲指数和房间的键值对顺序转换为房间信息列表
+     * @param roomMap 空闲指数房间信息键值对
+     * @return 排序后的房间信息列表
+     */
+    private List<Room> transformRoom(Map<Integer, Room> roomMap) {
+        List<Room> roomList = new ArrayList<>();
+        return roomList;
+    }
+
+    @Override
     public List<Room> roomByBuilding(Building building) {
         return roomRepository.getRoomsByBuilding(building);
     }
