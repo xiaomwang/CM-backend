@@ -359,30 +359,66 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
      */
     @Override
     public List<Room> sortRoomByFreeIndex(List<Room> roomList, Date start, Date end) {
-        Map<Integer, Room> roomMap = calculateRoomFreeIndex(roomList, start, end);
-        List<Room> rooms = transformRoom(roomMap);
-        return rooms;
+        Map<Room, Integer> roomMap = calculateRoomFreeIndex(roomList, start, end);
+        return transformRoom(roomMap);
     }
 
     /**
-     * 计算每个房间的空闲指数并存在TreeMap中（排序）
+     * 计算每个房间的空闲指数并存在HashMap中（排序）
      * @param roomList 房间列表
      * @param start 开始时间
      * @param end 结束时间
      * @return 房间及其空闲指数的映射
      */
-    private Map<Integer, Room> calculateRoomFreeIndex(List<Room> roomList, Date start, Date end) {
-        Map<Integer, Room> roomMap = new TreeMap<>();
+    @Override
+    public Map<Room, Integer> calculateRoomFreeIndex(List<Room> roomList, Date start, Date end) {
+        Map<Room, Integer> roomMap = new HashMap<>(16);
+        List<Conference> conferenceList = generalService.getConferencesByDate(start, end);
+        //统计时间区间总共有多少个时间块（半小时统计为一个时间块）
+        Long totalTime = (end.getTime()-start.getTime())/1000/1800;
+        //将每一个房间在时间区间的空闲时间块统计出来，存入映射中
+        for(Room room : roomList) {
+            Integer freeTime = Integer.valueOf(String.valueOf(totalTime));
+            for(int i=0; i<conferenceList.size(); ) {
+                Conference conference = conferenceList.get(i);
+                if(!conference.getStatus().equals(1)) {
+                    conferenceList.remove(conference);
+                } else if(conference.getRoom().equals(room)&&conference.getStatus().equals(1)) {
+                    Long minTime = conference.getEndTime().getTime()-conference.getStartTime().getTime();
+                    minTime = Math.min(minTime, conference.getEndTime().getTime()-start.getTime());
+                    minTime = Math.min(minTime, end.getTime()-conference.getStartTime().getTime());
+                    Integer tempTime = Integer.valueOf(String.valueOf(minTime/1000/1800));
+                    freeTime = freeTime - tempTime;
+                    conferenceList.remove(conference);
+                } else {
+                    i++;
+                }
+
+            }
+            roomMap.put(room, freeTime);
+        }
         return roomMap;
     }
 
     /**
-     * 将排序的空闲指数和房间的键值对顺序转换为房间信息列表
+     * 将空闲指数和房间的键值对排序并转换为房间信息列表
      * @param roomMap 空闲指数房间信息键值对
      * @return 排序后的房间信息列表
      */
-    private List<Room> transformRoom(Map<Integer, Room> roomMap) {
+    @Override
+    public List<Room> transformRoom(Map<Room, Integer> roomMap) {
         List<Room> roomList = new ArrayList<>();
+        List<Map.Entry<Room, Integer>> list = new ArrayList<>(roomMap.entrySet());
+        //按value值即空闲指数从大到小排列
+        Collections.sort(list, new Comparator<Map.Entry<Room, Integer>>() {
+            @Override
+            public int compare(Map.Entry<Room, Integer> o1, Map.Entry<Room, Integer> o2) {
+                return o2.getValue().compareTo(o1.getValue());
+            }
+        });
+        for (Map.Entry<Room, Integer> entry : list) {
+            roomList.add(entry.getKey());
+        }
         return roomList;
     }
 

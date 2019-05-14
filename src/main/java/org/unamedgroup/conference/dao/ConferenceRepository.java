@@ -159,4 +159,17 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
     @Query(value = "select * from conference c where c.room = ?1 and c.status = ?2 and c.start_time between (?3) and  (?4)", nativeQuery = true)
     List<Conference> findByRoomAndStatusAndDate(Room id, Integer status, Date now, Date date);
 
+
+    /**
+     * 根据房间信息以及开始时间结束时间查询（状态为通过的）
+     * @param room 房间信息
+     * @param status 会议状态
+     * @param startStart 开始时间区间开始
+     * @param startEnd 开始时间区间结束
+     * @param endStart 结束时间区间开始
+     * @param endEnd 结束时间区间结束
+     * @return 会议信息列表
+     */
+    List<Conference> findByRoomAndStatusAndStartTimeBetweenAndEndTimeBetween(Room room, Integer status, Date startStart, Date startEnd, Date endStart, Date endEnd);
+
 }

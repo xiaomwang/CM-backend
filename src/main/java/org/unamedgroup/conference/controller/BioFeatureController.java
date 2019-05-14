@@ -99,7 +99,7 @@ public class BioFeatureController {
             , response = Integer.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "imgStr", value = "图片流信息", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "userID", value = "用户id", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "roomID", value = "会议室id", required = true, dataType = "int", paramType = "query"),
     })
     @RequestMapping(value = "/get", method = RequestMethod.POST)
     @ResponseBody

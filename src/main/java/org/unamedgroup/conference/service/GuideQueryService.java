@@ -6,6 +6,7 @@ import org.unamedgroup.conference.entity.Room;
 import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 向导查询相关业务
@@ -39,4 +40,21 @@ public interface GuideQueryService {
      * @return 排序后的房间信息列表
      */
     List<Room> sortRoomByFreeIndex(List<Room> roomList, Date start, Date end);
+
+
+    /**
+     * 计算每个房间的空闲指数并存在TreeMap中（排序）
+     * @param roomList 房间列表
+     * @param start 开始时间
+     * @param end 结束时间
+     * @return 房间及其空闲指数的映射
+     */
+    Map<Room, Integer> calculateRoomFreeIndex(List<Room> roomList, Date start, Date end);
+
+    /**
+     * 将排序的空闲指数和房间的键值对顺序转换为房间信息列表
+     * @param roomMap 空闲指数房间信息键值对
+     * @return 排序后的房间信息列表
+     */
+    List<Room> transformRoom(Map<Room, Integer> roomMap);
 }
