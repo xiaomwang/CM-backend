@@ -28,8 +28,8 @@ hs_err_pid*
 *.iml
 .idea/
 target/
-<<<<<<< HEAD
-.yml
-=======
 *.yml
->>>>>>> 548f5a00c2837a347fc8e53f9b8849ba1dd84018
+
+# Hongruan SDK
+asf_install.dat
+freesdk_132512.dat
