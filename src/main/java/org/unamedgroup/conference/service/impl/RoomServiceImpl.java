@@ -346,6 +346,148 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     }
 
     @Override
+    public List<Room> getAllRoom() {
+        return roomRepository.findAll();
+    }
+
+    /**
+     * 按房间在时间区间内房间的空闲指数进行排序，每半个小时空闲累积一个空闲指数
+     *
+     * @param start    开始时间
+     * @param end      结束时间
+     * @param roomList 房间列表
+     * @return 排序后的房间信息列表
+     */
+    @Override
+    public List<Room> sortRoomByFreeIndex(List<Room> roomList, Date start, Date end) {
+        //将统计空闲指数和针对空闲指数由大到小排序方法封装
+        Map<Room, Integer> roomMap = calculateRoomFreeIndex(roomList, start, end);
+        return transformRoom(roomMap);
+    }
+
+    /**
+     * 计算每个房间的空闲指数并存在HashMap中（排序）
+     *
+     * @param roomList 房间列表
+     * @param start    开始时间
+     * @param end      结束时间
+     * @return 房间及其空闲指数的映射
+     */
+    @Override
+    public Map<Room, Integer> calculateRoomFreeIndex(List<Room> roomList, Date start, Date end) {
+        //用来存放房间信息和其空闲指数的映射
+        Map<Room, Integer> roomMap = new HashMap<>(16);
+        //取出与设定时间段冲突的会议列表
+        List<Conference> conferenceList = generalService.getConferencesByDate(start, end);
+        //统计时间区间总共有多少个时间块（半小时统计为一个时间块）
+        Long totalTime = (end.getTime() - start.getTime()) / 1000 / 1800;
+        //将每一个房间在时间区间的空闲时间块统计出来，存入映射中
+        for (Room room : roomList) {
+            //统计空闲时间即空闲指数
+            Integer freeTime = Integer.valueOf(String.valueOf(totalTime));
+            for (int i = 0; i < conferenceList.size(); ) {
+                Conference conference = conferenceList.get(i);
+                //剔除驳回和取消的会议
+                if (!conference.getStatus().equals(1)) {
+                    conferenceList.remove(conference);
+                    //对与设定时间段冲突会议并且属于这个房间的进行空闲指数减计算
+                } else if (conference.getRoom().equals(room) && conference.getStatus().equals(1)) {
+                    Long minTime = conference.getEndTime().getTime() - conference.getStartTime().getTime();
+                    minTime = Math.min(minTime, conference.getEndTime().getTime() - start.getTime());
+                    minTime = Math.min(minTime, end.getTime() - conference.getStartTime().getTime());
+                    Integer tempTime = Integer.valueOf(String.valueOf(minTime / 1000 / 1800));
+                    freeTime = freeTime - tempTime;
+                    conferenceList.remove(conference);
+                    //不属于上述情况则pass，判断下一个房间
+                } else {
+                    i++;
+                }
+
+            }
+            roomMap.put(room, freeTime);
+        }
+        return roomMap;
+    }
+
+    /**
+     * 将空闲指数和房间的键值对排序并转换为房间信息列表
+     *
+     * @param roomMap 空闲指数房间信息键值对
+     * @return 排序后的房间信息列表
+     */
+    @Override
+    public List<Room> transformRoom(Map<Room, Integer> roomMap) {
+        List<Room> roomList = new ArrayList<>();
+        List<Map.Entry<Room, Integer>> list = new ArrayList<>(roomMap.entrySet());
+        //按value值即空闲指数从大到小排列
+        Collections.sort(list, new Comparator<Map.Entry<Room, Integer>>() {
+            @Override
+            public int compare(Map.Entry<Room, Integer> o1, Map.Entry<Room, Integer> o2) {
+                return o2.getValue().compareTo(o1.getValue());
+            }
+        });
+        for (Map.Entry<Room, Integer> entry : list) {
+            roomList.add(entry.getKey());
+        }
+        return roomList;
+    }
+
+    @Override
+    public List<Room> screenRoomList(Room room) {
+        //从数据库中查询所有的会议室列表
+        List<Room> roomList = roomRepository.findAll();
+        //参数有效的索引号方便比较
+        List<Integer> indexList = new ArrayList<>();
+        //接受参数列表
+        List<Object> paramList = new ArrayList<>();
+        //从会议室提取参数列表，用来于接受参数对比
+        List<Object> paramOneList = new ArrayList<>();
+        //结果集存储列表
+        List<Room> resList = new ArrayList<>();
+        resList.addAll(roomList);
+        //存储接受参数列表
+        paramList.add(room.getBuilding().getAddress());
+        paramList.add(room.getBuilding().getBuildingID());
+        paramList.add(room.getLocation());
+        paramList.add(room.getCapacity());
+        paramList.add(room.getCatalogue());
+        for (int i = 0; i < paramList.size(); i++) {
+            indexList.add(i);
+        }
+        //记录有效参数索引
+        for (int i = 0; i < paramList.size(); i++) {
+            Object param = paramList.get(i);
+            String team = param.toString();
+            if ("-1".equals(team)) {
+                indexList.remove(Integer.valueOf(i));
+            }
+        }
+        //接收参数不为空的时候去判断这个房间信息符不符合参数要求
+        if (indexList.size() > 0) {
+            for (Room roomOne : roomList) {
+                Boolean flag = true;
+                paramOneList.add(roomOne.getBuilding().getAddress());
+                paramOneList.add(roomOne.getBuilding().getBuildingID());
+                paramOneList.add(roomOne.getLocation());
+                paramOneList.add(roomOne.getCapacity());
+                paramOneList.add(roomOne.getCatalogue());
+                for (Integer index : indexList) {
+                    if (!paramList.get(index).equals(paramOneList.get(index))) {
+                        flag = false;
+                        break;
+                    }
+                }
+                //清空paramOneList
+                paramOneList.clear();
+                if (!flag) {
+                    resList.remove(roomOne);
+                }
+            }
+        }
+        return resList;
+    }
+
+    @Override
     public List<Room> roomByBuilding(Building building) {
         return roomRepository.getRoomsByBuilding(building);
     }
