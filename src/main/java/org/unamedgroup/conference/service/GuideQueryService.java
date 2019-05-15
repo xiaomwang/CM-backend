@@ -1,5 +1,6 @@
 package org.unamedgroup.conference.service;
 
+import javafx.stage.Screen;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
 
@@ -57,4 +58,12 @@ public interface GuideQueryService {
      * @return 排序后的房间信息列表
      */
     List<Room> transformRoom(Map<Room, Integer> roomMap);
+
+
+    /**
+     * 通过会议室参数筛选符合条件的会议室
+     * @param room 会议室参数信息
+     * @return 会议室列表
+     */
+    List<Room> screenRoomList(Room room);
 }
