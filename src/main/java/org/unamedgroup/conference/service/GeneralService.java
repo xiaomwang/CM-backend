@@ -1,6 +1,7 @@
 package org.unamedgroup.conference.service;
 
 import org.unamedgroup.conference.entity.Conference;
+import org.unamedgroup.conference.entity.User;
 
 import java.util.Date;
 import java.util.List;
@@ -31,7 +32,7 @@ public interface GeneralService {
     public List<Conference> getConferencesByDate(Date start, Date end);
 
     /**
-     *  根据时间点以及地点查看会议
+     * 根据时间点以及地点查看会议
      *
      * @param roomID
      * @param date
@@ -39,4 +40,9 @@ public interface GeneralService {
      */
     public List<Conference> getConferencesByLocationAndDate(Integer roomID, Date now, Date date);
 
+    /**
+     * 返回当前登录用户
+     * @return 当前登录的用户
+     */
+    public User getLoginUser();
 }
