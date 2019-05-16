@@ -147,18 +147,6 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
     @Query(value = "select count(*) from conference c where c.status = ?1 and (c.user = ?2 or c.participant_sequence in (?3))", nativeQuery = true)
     Integer countMyConference(Integer status, Integer user, List<Integer> participantSequence);
 
-    /**
-     * 根据会议室、会议状态、时间点查看会议, 用于人脸识别
-     *
-     * @param id
-     * @param status
-     * @param date
-     * @return
-     */
-    @Modifying
-    @Query(value = "select * from conference c where c.room = ?1 and c.status = ?2 and c.start_time between (?3) and  (?4)", nativeQuery = true)
-    List<Conference> findByRoomAndStatusAndDate(Room id, Integer status, Date now, Date date);
-
 
     /**
      * 根据房间信息以及开始时间结束时间查询（状态为通过的）
@@ -172,4 +160,17 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
      */
     List<Conference> findByRoomAndStatusAndStartTimeBetweenAndEndTimeBetween(Room room, Integer status, Date startStart, Date startEnd, Date endStart, Date endEnd);
 
+
+    /**
+     * 根据会议室、会议状态、时间点查看会议, 专用于人脸识别
+     *
+     * @param id
+     * @param status
+     * @param nowTime
+     * @param afterHalfHour
+     * @return
+     */
+    @Modifying
+    @Query(value = "select * from conference c where c.room = ?1 and c.status = ?2 and c.end_time >= (?3) and c.start_time <= (?4) ", nativeQuery = true)
+    List<Conference> findByRoomAndStatusAndDate(Room id, Integer status, Date nowTime, Date afterHalfHour);
 }
