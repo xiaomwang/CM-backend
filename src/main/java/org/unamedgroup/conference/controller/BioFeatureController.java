@@ -60,7 +60,6 @@ public class BioFeatureController {
             , response = Integer.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "imgStr", value = "图片流信息", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "userID", value = "用户id", required = true, dataType = "int", paramType = "query"),
     })
     @RequestMapping(value = "/set", method = RequestMethod.POST)
     @ResponseBody
@@ -76,6 +75,9 @@ public class BioFeatureController {
         try {
             InputStream inputStream = ImageUtil.base64InputStream(imgStr);
             FaceFeature faceFeature = detectFaceService.addFaceFeature(inputStream, userID);
+            if (inputStream != null) {
+                inputStream.close();
+            }
             if (faceFeature == null) {
                 System.err.println("找不到人脸信息");
                 return new FailureInfo(4000,"找不到人脸信息" );
