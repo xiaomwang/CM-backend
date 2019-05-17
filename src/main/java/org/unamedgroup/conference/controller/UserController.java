@@ -13,8 +13,10 @@ import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.User;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
+import org.unamedgroup.conference.entity.temp.UserInfo;
 import org.unamedgroup.conference.security.JWTUtil;
 import org.unamedgroup.conference.security.UnauthorizedException;
+import org.unamedgroup.conference.service.GeneralService;
 import org.unamedgroup.conference.service.MyConferenceService;
 
 import java.util.List;
@@ -39,6 +41,27 @@ public class UserController {
     ConferenceRepository conferenceRepository;
     @Autowired
     MyConferenceService myConferenceService;
+    @Autowired
+    GeneralService generalService;
+
+    @ApiOperation(value = "获取当前用户的详细用户信息")
+    @RequestMapping(value = "/currentUserInfo", method = RequestMethod.GET)
+    @ResponseBody
+    public Object currentUserInfo() {
+        //登录有效性验证
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+
+        try {
+            UserInfo userInfo = new UserInfo(generalService.getLoginUser());
+            return new SuccessInfo(userInfo);
+        } catch (Exception e) {
+            return new FailureInfo(7003, "获取用户详细信息失败。");
+        }
+
+    }
 
     @ApiOperation(value = "我的会议信息api")
     @RequestMapping(value = "/myConferences", method = RequestMethod.GET)
@@ -98,19 +121,18 @@ public class UserController {
     @RequestMapping(value = "/userID", method = RequestMethod.GET)
     @ResponseBody
     public Object getUserID() {
-        String token = null;
-        try {
-            Subject subject = SecurityUtils.getSubject();
-            if (subject.isAuthenticated() == true) {
-                token = subject.getPrincipal().toString();
-            } else {
-                throw new UnauthorizedException();
-            }
-        } catch (Exception e) {
-            return new FailureInfo(-2, e.toString());
+        //登录有效性验证
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
         }
-        User user = userRepository.getUserByPhoneNumber(JWTUtil.getPhoneNumber(token));
-        return new SuccessInfo(user.getUserID());
+
+        try {
+            User user = generalService.getLoginUser();
+            return new SuccessInfo(user.getUserID());
+        } catch (Exception e) {
+            return new FailureInfo(-2, "获取用户ID信息失败。");
+        }
     }
 
 
