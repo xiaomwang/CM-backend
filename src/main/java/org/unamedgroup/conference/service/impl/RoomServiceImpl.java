@@ -81,57 +81,58 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
 
     @Override
     public List<RoomTime> handleRoomTime(String date, Building building, Integer roomId) {
-        if (date == null || building == null || roomId == null) {
-            return null;
-        }
-        /*规定正则表达式*/
-        String regular = "\\d{4}-\\d{2}-\\d{2}";
-        /*根据传入日期计算起始时间和结束时间*/
-        String start, end;
-        /*日期参数的有限性检验*/
-        if (!date.substring(0, 10).matches(regular)) {
-            return null;
-        } else {
-            start = date.substring(0, 10) + " 00:00:00";
-        }
-        /*传入为日期的其实时间即00:00:00，将其转换为改日会议最后一个时间节点即23:30:00*/
-        end = start.replaceAll("00:00:00", "23:30:00");
-        /*规定日期转换格式*/
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        /*将字符串起止时间转化为时间戳格式*/
-        Timestamp startDate = null, endDate = null;
-        try {
-            startDate = new Timestamp(format.parse(start).getTime());
-            endDate = new Timestamp(format.parse(end).getTime());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        List<Room> roomList = getConferenceList(building, roomId);
-        if (roomList == null) {
-            return null;
-        }
-        /*遍历会议室并将每个会议室的会议列表分开存放哈希中*/
-        Map<Room, List<Conference>> mapStart = new HashMap<>(16);
-        Map<Room, List<Conference>> mapEnd = new HashMap<>(16);
-        for (Room room : roomList) {
-            mapStart.put(room, conferenceRepository.findByRoomAndStatusAndStartTimeBetween(room, 1, startDate, endDate));
-            mapEnd.put(room, conferenceRepository.findByRoomAndStatusAndEndTimeBetweenAndStartTimeBefore(room, 1, startDate, endDate, startDate));
-        }
-        /*用来存放全部会议室占用信息*/
-        List<RoomTime> list = new ArrayList<>();
-        /*遍历会议列表信息*/
-        for (Map.Entry<Room, List<Conference>> m : mapStart.entrySet()) {
-            RoomTime roomTime = new RoomTime();
-            list.add(timeListUtil(true, m, roomTime));
-        }
-        int index = 0;
-        for (Map.Entry<Room, List<Conference>> m : mapEnd.entrySet()) {
-            RoomTime roomTime = list.get(index);
-            list.remove(index);
-            list.add(index, timeListUtil(false, m, roomTime));
-            index++;
-        }
-        return list;
+//        if (date == null || building == null || roomId == null) {
+//            return null;
+//        }
+//        /*规定正则表达式*/
+//        String regular = "\\d{4}-\\d{2}-\\d{2}";
+//        /*根据传入日期计算起始时间和结束时间*/
+//        String start, end;
+//        /*日期参数的有限性检验*/
+//        if (!date.substring(0, 10).matches(regular)) {
+//            return null;
+//        } else {
+//            start = date.substring(0, 10) + " 00:00:00";
+//        }
+//        /*传入为日期的其实时间即00:00:00，将其转换为改日会议最后一个时间节点即23:30:00*/
+//        end = start.replaceAll("00:00:00", "23:30:00");
+//        /*规定日期转换格式*/
+//        DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+//        /*将字符串起止时间转化为时间戳格式*/
+//        Timestamp startDate = null, endDate = null;
+//        try {
+//            startDate = new Timestamp(format.parse(start).getTime());
+//            endDate = new Timestamp(format.parse(end).getTime());
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//        List<Room> roomList = getConferenceList(building, roomId);
+//        if (roomList == null) {
+//            return null;
+//        }
+//        /*遍历会议室并将每个会议室的会议列表分开存放哈希中*/
+//        Map<Room, List<Conference>> mapStart = new HashMap<>(16);
+//        Map<Room, List<Conference>> mapEnd = new HashMap<>(16);
+//        for (Room room : roomList) {
+//            mapStart.put(room, conferenceRepository.findByRoomAndStatusAndStartTimeBetween(room, 1, startDate, endDate));
+//            mapEnd.put(room, conferenceRepository.findByRoomAndStatusAndEndTimeBetweenAndStartTimeBefore(room, 1, startDate, endDate, startDate));
+//        }
+//        /*用来存放全部会议室占用信息*/
+//        List<RoomTime> list = new ArrayList<>();
+//        /*遍历会议列表信息*/
+//        for (Map.Entry<Room, List<Conference>> m : mapStart.entrySet()) {
+//            RoomTime roomTime = new RoomTime();
+//            list.add(timeListUtil(true, m, roomTime));
+//        }
+//        int index = 0;
+//        for (Map.Entry<Room, List<Conference>> m : mapEnd.entrySet()) {
+//            RoomTime roomTime = list.get(index);
+//            list.remove(index);
+//            list.add(index, timeListUtil(false, m, roomTime));
+//            index++;
+//        }
+//        return list;
+        return null;
     }
 
     @Override
@@ -485,6 +486,57 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
             }
         }
         return resList;
+    }
+
+    @Override
+    public List<RoomTime> roomTable(List<Room> roomList, String date) {
+        /*规定正则表达式*/
+        String regular = "\\d{4}-\\d{2}-\\d{2}";
+        /*根据传入日期计算起始时间和结束时间*/
+        String start, end;
+        /*日期参数的有限性检验*/
+        if (!date.substring(0, 10).matches(regular)) {
+            return null;
+        } else {
+            start = date.substring(0, 10) + " 00:00:00";
+        }
+        /*传入为日期的其实时间即00:00:00，将其转换为改日会议最后一个时间节点即23:30:00*/
+        end = start.replaceAll("00:00:00", "23:30:00");
+        /*规定日期转换格式*/
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        /*将字符串起止时间转化为时间戳格式*/
+        Timestamp startDate = null, endDate = null;
+        try {
+            startDate = new Timestamp(format.parse(start).getTime());
+            endDate = new Timestamp(format.parse(end).getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if (roomList == null) {
+            return null;
+        }
+        /*遍历会议室并将每个会议室的会议列表分开存放哈希中*/
+        Map<Room, List<Conference>> mapStart = new HashMap<>(16);
+        Map<Room, List<Conference>> mapEnd = new HashMap<>(16);
+        for (Room room : roomList) {
+            mapStart.put(room, conferenceRepository.findByRoomAndStatusAndStartTimeBetween(room, 1, startDate, endDate));
+            mapEnd.put(room, conferenceRepository.findByRoomAndStatusAndEndTimeBetweenAndStartTimeBefore(room, 1, startDate, endDate, startDate));
+        }
+        /*用来存放全部会议室占用信息*/
+        List<RoomTime> list = new ArrayList<>();
+        /*遍历会议列表信息*/
+        for (Map.Entry<Room, List<Conference>> m : mapStart.entrySet()) {
+            RoomTime roomTime = new RoomTime();
+            list.add(timeListUtil(true, m, roomTime));
+        }
+        int index = 0;
+        for (Map.Entry<Room, List<Conference>> m : mapEnd.entrySet()) {
+            RoomTime roomTime = list.get(index);
+            list.remove(index);
+            list.add(index, timeListUtil(false, m, roomTime));
+            index++;
+        }
+        return list;
     }
 
     @Override

@@ -18,13 +18,16 @@ public class FaceConfiguration {
 
     @Bean
     public  FaceEngine faceEngine() {
-
-        //windows
-//        String appId = "Bbvyu5GeUE8eaBhyLsNcp48RNJ4mBnFHHKAuAgRpJvDT";
-//        String sdkKey = "6qjPs9Ey8zBbshQnkc3jpXLMXf8jMtNbXQpnCYSAQuqJ";
-        //linux
-        String appId = "3NapBq4mgBbQAwwiSPyLDsB4mevNYtUxR8m2YXx4PYur";
-        String sdkKey = "j4UamkGDadxoeSnkkMWMSKfbrR7pCajXmLhhg4rLGjV";
+        String appId, sdkKey;
+        if(System.getProperty("os.name").toLowerCase().substring(0,3).equals("win")) {
+            //windows
+            appId = "Bbvyu5GeUE8eaBhyLsNcp48RNJ4mBnFHHKAuAgRpJvDT";
+            sdkKey = "6qjPs9Ey8zBbshQnkc3jpXLMXf8jMtNbXQpnCYSAQuqJ";
+        } else {
+            //linux
+            appId = "3NapBq4mgBbQAwwiSPyLDsB4mevNYtUxR8m2YXx4PYur";
+            sdkKey = "j4UamkGDadxoeSnkkMWMSKfbrR7pCajXmLhhg4rLGjV";
+        }
 
         FaceEngine faceEngine = new FaceEngine();
         //激活引擎
