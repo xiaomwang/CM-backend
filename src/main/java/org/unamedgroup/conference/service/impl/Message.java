@@ -3,8 +3,9 @@ package org.unamedgroup.conference.service.impl;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
 import com.github.qcloudsms.httpclient.HTTPException;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.unamedgroup.conference.entity.User;
 
 import java.io.IOException;
 
@@ -24,6 +25,9 @@ public class Message {
     private static int templateId = 0;
     // 签名
     private static final String smsSign = "";
+
+    @Autowired
+    private static GeneralServiceImpl generalService;
 
     public static Boolean attendance(String conferenceName, String time, String roomName) {
         try {
@@ -53,9 +57,10 @@ public class Message {
 
     private static Boolean sendMessage(String[] params) {
         try {
+            User user = generalService.getLoginUser();
             SmsSingleSender ssender = new MySmsSingleSender(appid, appkey);
             // 签名参数未提供或者为空时，会使用默认签名发送短信
-            SmsSingleSenderResult result = ssender.sendWithParam("86", "17685590508", templateId, params, smsSign, "", "");
+            SmsSingleSenderResult result = ssender.sendWithParam("86", user.getPhoneNumber(), templateId, params, smsSign, "", "");
             System.out.println(result);
         } catch (HTTPException e) {
             // HTTP响应码错误
