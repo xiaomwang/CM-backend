@@ -20,6 +20,8 @@ import org.unamedgroup.conference.service.GeneralService;
 import org.unamedgroup.conference.service.MyConferenceService;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * UserController
@@ -152,4 +154,84 @@ public class UserController {
             return new SuccessInfo(list);
         }
     }
+
+    @ApiOperation(value = "用户注册")
+    @RequestMapping(value = "/signup", method = RequestMethod.POST)
+    @ResponseBody
+    public Object signup(String password, String realName, String department, String email, String phoneNumber, Integer userGroup) {
+        try {
+            // 密码相关的逻辑验证
+            if (password == null || password.equals("")) {
+                return new FailureInfo(7100, "密码为空，请重试！");
+            }
+            if (password.length() < 6) {
+                return new FailureInfo(7101, "密码长度小于6，请更换一个长一点的密码。");
+            }
+
+            // 邮箱正则匹配
+            String emailCheck = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+            Pattern regex = Pattern.compile(emailCheck);
+            Matcher matcher = regex.matcher(email);
+            Boolean isMatched = matcher.matches();
+            if (isMatched == false) {
+                return new FailureInfo(7102, "邮箱格式不正确");
+            }
+            if (userRepository.getUserByEmail(email) != null) {
+                return new FailureInfo(7103, "该邮箱已注册，不可使用！");
+            }
+
+            // 手机正则匹配
+            String mobileCheck = "^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\\d{8}$";
+            regex = Pattern.compile(mobileCheck);
+            matcher = regex.matcher(phoneNumber);
+            isMatched = matcher.matches();
+            if (isMatched == false) {
+                return new FailureInfo(7104, "手机号码格式不正确");
+            }
+            if (userRepository.getUserByPhoneNumber(phoneNumber) != null) {
+                return new FailureInfo(7105, "该手机号码已注册，不可使用！");
+            }
+
+            User newUser = new User(password, realName, department, email, phoneNumber, userGroup, null);
+            userRepository.save(newUser);
+
+            return new SuccessInfo(newUser.getUserID());
+
+        } catch (Exception e) {
+            System.err.println("遇到错误，请核实：");
+            System.err.println(e.toString());
+            return new FailureInfo(7005, "注册遇到未知错误，请通知管理员检查系统日志，谢谢！");
+        }
+    }
+
+
+    @ApiOperation(value = "修改密码")
+    @RequestMapping(value = "/password", method = RequestMethod.POST)
+    @ResponseBody
+    public Object changePassword(String oldPassword, String newPassword) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+
+        try {
+            User user = generalService.getLoginUser();
+            if (user.getPassword().equals(oldPassword) == false) {
+                return new FailureInfo(7003, "原密码不正确。");
+            }
+
+            if (newPassword.length() < 6) {
+                return new FailureInfo(7101, "密码长度小于6，请更换一个长一点的密码。");
+            }
+
+            user.setPassword(newPassword);
+            userRepository.save(user);
+            return new SuccessInfo("密码修改成功！");
+        } catch (Exception e) {
+            System.err.println("密码修改失败！");
+            System.err.println(e.toString());
+            return new FailureInfo(7004, "密码修改遇到未知错误。");
+        }
+    }
+
 }

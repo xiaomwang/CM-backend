@@ -85,6 +85,7 @@ public class GeneralServiceImpl implements GeneralService {
         return conferenceList;
     }
 
+    @Override
     public User getLoginUser() {
         String token = null;
         try {

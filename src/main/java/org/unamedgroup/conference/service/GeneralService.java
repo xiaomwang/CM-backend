@@ -45,4 +45,5 @@ public interface GeneralService {
      * @return 当前登录的用户
      */
     public User getLoginUser();
+
 }

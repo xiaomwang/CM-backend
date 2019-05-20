@@ -1,4 +1,4 @@
-package org.unamedgroup.conference.service.impl;
+package org.unamedgroup.conference.service;
 
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.unamedgroup.conference.entity.User;
 import org.unamedgroup.conference.service.GeneralService;
+import org.unamedgroup.conference.service.impl.MySmsSingleSender;
 
 import java.io.IOException;
 

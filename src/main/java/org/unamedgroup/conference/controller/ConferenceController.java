@@ -12,14 +12,12 @@ import org.unamedgroup.conference.dao.ConferenceRepository;
 import org.unamedgroup.conference.dao.UserRepository;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
-import org.unamedgroup.conference.entity.temp.RoomTime;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
-import org.unamedgroup.conference.security.JWTToken;
 import org.unamedgroup.conference.security.JWTUtil;
 import org.unamedgroup.conference.service.GeneralService;
 import org.unamedgroup.conference.service.ManagingAttendeesService;
 import org.unamedgroup.conference.service.MyConferenceService;
-import org.unamedgroup.conference.service.impl.Message;
+import org.unamedgroup.conference.service.Message;
 
 import java.util.Calendar;
 import java.util.List;
@@ -124,8 +122,8 @@ public class ConferenceController {
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
         }
-        String phone = JWTUtil.getPhoneNumber(subject.getPrincipal().toString());
-        Integer userId = userRepository.getUserByPhoneNumber(phone).getUserID();
+
+        Integer userId = generalService.getLoginUser().getUserID();
         Integer total = myConferenceService.getMyConferenceTotal(userId);
         if (total == null) {
             return new FailureInfo(3102, "会议信息总数拉取失败");
