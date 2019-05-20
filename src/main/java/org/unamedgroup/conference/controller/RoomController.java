@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.unamedgroup.conference.dao.RoomRepository;
 import org.unamedgroup.conference.entity.Building;
+import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.RoomTime;
@@ -14,6 +15,7 @@ import org.unamedgroup.conference.service.GuideQueryService;
 import org.unamedgroup.conference.service.QuickCheckService;
 import org.unamedgroup.conference.service.RelevanceQueryService;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -95,7 +97,11 @@ public class RoomController {
     })
     @GetMapping(value = "list")
     public Object getList(String date, Building building, Integer roomID) {
-        List<RoomTime> roomTimeList = quickCheckService.handleRoomTime(date, building, roomID);
+        if (date == null || building == null || roomID == null) {
+            return new FailureInfo(6001, "处理房间填充失败！");
+        }
+        List<Room> roomList = quickCheckService.getConferenceList(building, roomID);
+        List<RoomTime> roomTimeList = guideQueryService.roomTable(roomList, date);
         if (roomTimeList == null) {
             return new FailureInfo(6001, "处理房间填充失败！");
         } else {
@@ -154,6 +160,21 @@ public class RoomController {
             }
         } catch (Exception e) {
             return new FailureInfo(6002, "找不到满足条件的房间！");
+        }
+    }
+
+    @GetMapping(value = "guide")
+    public Object guide(Date start, Date end, Room room, Building building) {
+        room.setBuilding(building);
+        List<Room> roomList = guideQueryService.screenRoomList(room);
+        roomList = guideQueryService.sortRoomByFreeIndex(roomList, start, end);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = simpleDateFormat.format(start);
+        List<RoomTime> roomTimeList = guideQueryService.roomTable(roomList, date);
+        if(roomTimeList!=null) {
+            return new SuccessInfo(roomTimeList);
+        } else {
+            return new FailureInfo(6001, "处理房间填充失败!");
         }
     }
 }

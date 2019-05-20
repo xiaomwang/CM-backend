@@ -75,6 +75,9 @@ public class BioFeatureController {
         try {
             InputStream inputStream = ImageUtil.base64InputStream(imgStr);
             FaceFeature faceFeature = detectFaceService.addFaceFeature(inputStream, userID);
+            if (inputStream != null) {
+                inputStream.close();
+            }
             if (faceFeature == null) {
                 System.err.println("找不到人脸信息");
                 return new FailureInfo(4000,"找不到人脸信息" );

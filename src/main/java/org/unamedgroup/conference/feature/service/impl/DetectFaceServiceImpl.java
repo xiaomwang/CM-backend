@@ -29,7 +29,8 @@ public class DetectFaceServiceImpl implements IDetectFaceService {
 
     @Autowired
     UserManageService userManageService;
-
+    @Autowired
+    FaceEngine faceEngine ;
 
     /**
      * 根据图片信息提取到人脸的特征信息
@@ -60,8 +61,6 @@ public class DetectFaceServiceImpl implements IDetectFaceService {
      */
     @Override
     public FaceFeature addFaceFeature(InputStream inputStream, Integer userID) {
-        //从工厂中获取FaceEngine引擎
-        FaceEngine faceEngine = FaceConfiguration.create();
         //进行人脸识别
         List<FaceInfo> faceInfoList = new ArrayList<FaceInfo>();
         //获取图片导入内存
@@ -93,8 +92,7 @@ public class DetectFaceServiceImpl implements IDetectFaceService {
      */
     @Override
     public double compareFace(InputStream inputStream, Integer userID) {
-        //获取人脸识别引擎
-        FaceEngine faceEngine = FaceConfiguration.create();
+
         //进行人脸识别
         List<FaceInfo> faceInfoList = new ArrayList<FaceInfo>();
         //获取图片导入内存

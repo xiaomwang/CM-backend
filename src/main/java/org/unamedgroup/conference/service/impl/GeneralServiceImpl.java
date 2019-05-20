@@ -1,11 +1,18 @@
 package org.unamedgroup.conference.service.impl;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.unamedgroup.conference.dao.ConferenceRepository;
 import org.unamedgroup.conference.dao.RoomRepository;
+import org.unamedgroup.conference.dao.UserRepository;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
+import org.unamedgroup.conference.entity.User;
+import org.unamedgroup.conference.entity.temp.FailureInfo;
+import org.unamedgroup.conference.security.JWTUtil;
+import org.unamedgroup.conference.security.UnauthorizedException;
 import org.unamedgroup.conference.service.GeneralService;
 
 import java.util.Date;
@@ -24,6 +31,8 @@ public class GeneralServiceImpl implements GeneralService {
     RoomRepository roomRepository;
     @Autowired
     ConferenceRepository conferenceRepository;
+    @Autowired
+    UserRepository userRepository;
 
     @Override
     public String getRoomNameByID(Integer roomID) {
@@ -64,16 +73,32 @@ public class GeneralServiceImpl implements GeneralService {
     }
 
     @Override
-    public List<Conference> getConferencesByLocationAndDate(Integer roomID, Date now, Date date){
+    public List<Conference> getConferencesByLocationAndDate(Integer roomID, Date now, Date date) {
         List<Conference> conferenceList = null;
-        try{
+        try {
             // 获取会议信息
             conferenceList = conferenceRepository.findByRoomAndStatusAndDate(roomRepository.getRoomByRoomID(roomID), 1, now, date);
-        }catch(Exception e){
+        } catch (Exception e) {
             System.err.println("获取该会议室的会议失败！！！");
             System.err.println(e.toString());
         }
         return conferenceList;
+    }
+
+    public User getLoginUser() {
+        String token = null;
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            if (subject.isAuthenticated() == true) {
+                token = subject.getPrincipal().toString();
+            } else {
+                throw new UnauthorizedException();
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        User user = userRepository.getUserByPhoneNumber(JWTUtil.getPhoneNumber(token));
+        return user;
     }
 
 }

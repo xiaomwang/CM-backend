@@ -3,6 +3,8 @@ package org.unamedgroup.conference.feature.factory;
 import com.arcsoft.face.EngineConfiguration;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.FunctionConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,14 +13,21 @@ import org.springframework.stereotype.Component;
  * @author zhoutao
  * @date 2019-03-12
  */
-@Component
+@Configuration
 public class FaceConfiguration {
 
-    public static FaceEngine create() {
-//        String appId = "Bbvyu5GeUE8eaBhyLsNcp48RNJ4mBnFHHKAuAgRpJvDT";
-//        String sdkKey = "6qjPs9Ey8zBbshQnkc3jpXLMXf8jMtNbXQpnCYSAQuqJ";
-        String appId = "3NapBq4mgBbQAwwiSPyLDsB4mevNYtUxR8m2YXx4PYur";
-        String sdkKey = "j4UamkGDadxoeSnkkMWMSKfbrR7pCajXmLhhg4rLGjV";
+    @Bean
+    public  FaceEngine faceEngine() {
+        String appId, sdkKey;
+        if(System.getProperty("os.name").toLowerCase().substring(0,3).equals("win")) {
+            //windows
+            appId = "Bbvyu5GeUE8eaBhyLsNcp48RNJ4mBnFHHKAuAgRpJvDT";
+            sdkKey = "6qjPs9Ey8zBbshQnkc3jpXLMXf8jMtNbXQpnCYSAQuqJ";
+        } else {
+            //linux
+            appId = "3NapBq4mgBbQAwwiSPyLDsB4mevNYtUxR8m2YXx4PYur";
+            sdkKey = "j4UamkGDadxoeSnkkMWMSKfbrR7pCajXmLhhg4rLGjV";
+        }
 
         FaceEngine faceEngine = new FaceEngine();
         //激活引擎
