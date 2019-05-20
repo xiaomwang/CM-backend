@@ -162,7 +162,7 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
 
 
     /**
-     * 根据会议室、会议状态、时间点查看会议, 专用于人脸识别
+     * 根据会议室、会议状态、时间点查看会议
      *
      * @param id
      * @param status
