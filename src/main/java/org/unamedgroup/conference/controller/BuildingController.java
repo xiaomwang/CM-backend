@@ -12,6 +12,7 @@ import org.unamedgroup.conference.entity.Room;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.RoomTime;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
+import org.unamedgroup.conference.service.ListBuildingService;
 
 import java.util.List;
 
@@ -29,6 +30,8 @@ import java.util.List;
 public class BuildingController {
     @Autowired
     BuildingRepository buildingRepository;
+    @Autowired
+    ListBuildingService listBuildingService;
 
     @ApiOperation(value = "获取所有楼宇信息api", protocols = "http"
             , produces = "application/json", consumes = "application/json"
@@ -56,6 +59,26 @@ public class BuildingController {
                 throw new NullPointerException();
             }
         } catch (Exception e) {
+            return new FailureInfo(2000, "找不到满足条件的楼宇！");
+        }
+    }
+
+    @GetMapping(value = "list/id")
+    public Object listId(Integer buildingID) {
+        try {
+            return new SuccessInfo(listBuildingService.listAddress(buildingID));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new FailureInfo(2000, "找不到满足条件的楼宇！");
+        }
+    }
+
+    @GetMapping(value = "list/address")
+    public Object listAddress(String address) {
+        try {
+            return new SuccessInfo(listBuildingService.listBuilding(address));
+        } catch (Exception e) {
+            e.printStackTrace();
             return new FailureInfo(2000, "找不到满足条件的楼宇！");
         }
     }
