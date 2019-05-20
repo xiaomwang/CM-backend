@@ -174,7 +174,7 @@ public class RoomController {
         if(roomTimeList!=null) {
             return new SuccessInfo(roomTimeList);
         } else {
-            return new FailureInfo(6005, "处理房间填充失败!");
+            return new FailureInfo(6001, "处理房间填充失败!");
         }
     }
 }
