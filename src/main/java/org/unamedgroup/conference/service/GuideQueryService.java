@@ -3,6 +3,7 @@ package org.unamedgroup.conference.service;
 import javafx.stage.Screen;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
+import org.unamedgroup.conference.entity.temp.RoomTime;
 
 import javax.xml.crypto.Data;
 import java.util.Date;
@@ -62,8 +63,17 @@ public interface GuideQueryService {
 
     /**
      * 通过会议室参数筛选符合条件的会议室
-     * @param room 会议室参数信息
+     * @param room 会议室筛选参数信息
      * @return 会议室列表
      */
     List<Room> screenRoomList(Room room);
+
+
+    /**
+     * 将会议室列表中的会议室查询出时间块信息并返回
+     * @param roomList 会议室列表
+     * @param date 日期
+     * @return 会议室时间块信息列表
+     */
+    List<RoomTime> roomTable(List<Room> roomList,String date);
 }

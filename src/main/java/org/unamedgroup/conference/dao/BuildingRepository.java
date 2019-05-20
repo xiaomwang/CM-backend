@@ -29,4 +29,11 @@ public interface BuildingRepository extends CrudRepository<Building, Integer> {
      * @return 楼宇实体
      */
     Building getBuildingByBuildingID(Integer buildingID);
+
+    /**
+     * 根据地址名查询楼宇id
+     * @param address 楼宇所在地址
+     * @return 楼宇列表
+     */
+    List<Building> findByAddress(String address);
 }

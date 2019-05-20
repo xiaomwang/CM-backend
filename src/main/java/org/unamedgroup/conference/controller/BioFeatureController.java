@@ -34,7 +34,7 @@ import java.util.List;
  * 错误代码使用1xxx
  *
  * @author zhoutao
- * @date 2019/03/29
+ * @date 2019/05/16
  */
 @Api(value = "人脸识别 API", description = "人脸识别接口", protocols = "http")
 @CrossOrigin
@@ -60,7 +60,6 @@ public class BioFeatureController {
             , response = Integer.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "imgStr", value = "图片流信息", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "userID", value = "用户id", required = true, dataType = "int", paramType = "query"),
     })
     @RequestMapping(value = "/set", method = RequestMethod.POST)
     @ResponseBody
@@ -76,13 +75,15 @@ public class BioFeatureController {
         try {
             InputStream inputStream = ImageUtil.base64InputStream(imgStr);
             FaceFeature faceFeature = detectFaceService.addFaceFeature(inputStream, userID);
+            if (inputStream != null) {
+                inputStream.close();
+            }
             if (faceFeature == null) {
                 System.err.println("找不到人脸信息");
                 return new FailureInfo(4000,"找不到人脸信息" );
             }
             return new SuccessInfo("设置人脸成功" );
         } catch (Exception e) {
-
             System.err.println("发生错误，请检查：" + e.toString());
             return new FailureInfo(4001, "发生错误请检查" );
         }
@@ -110,10 +111,13 @@ public class BioFeatureController {
             // 处理图片信息
             InputStream inputStream = ImageUtil.base64InputStream(imgStr);
             //现在时间
-            Date now = new Date();
+            Date nowTime = new Date();
             //半个小时后时间
-            Date date = new Date(now.getTime() + (long)30*60*1000);
-            List<Conference> conferenceList = generalService.getConferencesByLocationAndDate(roomID, now, date);
+            Date afterHalfHour = new Date(nowTime.getTime() + (long)30*60*1000);
+            List<Conference> conferenceList = generalService.getConferencesByLocationAndDate(roomID, nowTime, afterHalfHour);
+            if(conferenceList.isEmpty()){
+                return new FailureInfo(4003,"当前时间没有会议" );
+            }
             Double result = result = detectFaceService.compareFace(inputStream, conferenceList.get(0).getUser());
             if (result == -1) {
                 System.err.println("找不到人脸信息");
