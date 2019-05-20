@@ -40,6 +40,6 @@ public class ApplicationTests {
 
     @Test
     public void test() {
-        Message.sendMessage("1");
+//        Message.sendMessage("1");
     }
 }
