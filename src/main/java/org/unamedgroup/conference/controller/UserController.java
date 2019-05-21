@@ -137,7 +137,6 @@ public class UserController {
         }
     }
 
-
     @ApiOperation(value = "用户姓名模糊匹配api")
     @RequestMapping(value = "/userList", method = RequestMethod.GET)
     @ResponseBody
@@ -168,28 +167,19 @@ public class UserController {
                 return new FailureInfo(7101, "密码长度小于6，请更换一个长一点的密码。");
             }
 
-            // 邮箱正则匹配
-            String emailCheck = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
-            Pattern regex = Pattern.compile(emailCheck);
-            Matcher matcher = regex.matcher(email);
-            Boolean isMatched = matcher.matches();
-            if (isMatched == false) {
-                return new FailureInfo(7102, "邮箱格式不正确");
-            }
+
             if (userRepository.getUserByEmail(email) != null) {
                 return new FailureInfo(7103, "该邮箱已注册，不可使用！");
             }
-
-            // 手机正则匹配
-            String mobileCheck = "^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\\d{8}$";
-            regex = Pattern.compile(mobileCheck);
-            matcher = regex.matcher(phoneNumber);
-            isMatched = matcher.matches();
-            if (isMatched == false) {
-                return new FailureInfo(7104, "手机号码格式不正确");
+            if (generalService.checkEmail(email) != true) {
+                return new FailureInfo(7102, "邮箱格式不正确");
             }
+
             if (userRepository.getUserByPhoneNumber(phoneNumber) != null) {
                 return new FailureInfo(7105, "该手机号码已注册，不可使用！");
+            }
+            if (generalService.checkMoiblePhone(phoneNumber) != true) {
+                return new FailureInfo(7104, "手机号码格式不正确");
             }
 
             User newUser = new User(password, realName, department, email, phoneNumber, userGroup, null);
@@ -234,4 +224,37 @@ public class UserController {
         }
     }
 
+    @ApiOperation(value = "更新用户个人信息")
+    @RequestMapping(value = "/currentUserInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public Object updateCurrentUserInfo(String email, String phoneNumber) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+
+        try {
+            User user = generalService.getLoginUser();
+            if (userRepository.getUserByEmail(email) != null) {
+                return new FailureInfo(7103, "该邮箱已注册，不可使用！");
+            }
+            if (generalService.checkEmail(email) != true) {
+                return new FailureInfo(7102, "邮箱格式不正确");
+            }
+            user.setEmail(email);
+            if (userRepository.getUserByPhoneNumber(phoneNumber) != null) {
+                return new FailureInfo(7105, "该手机号码已注册，不可使用！");
+            }
+            if (generalService.checkMoiblePhone(phoneNumber) != true) {
+                return new FailureInfo(7104, "手机号码格式不正确");
+            }
+            user.setPhoneNumber(phoneNumber);
+            userRepository.save(user);
+            return new SuccessInfo("个人信息更新成功！");
+        } catch (Exception e) {
+            System.err.println("个人信息更新失败！");
+            System.err.println(e.toString());
+            return new FailureInfo(7005, "个人信息更新遇到未知错误。");
+        }
+    }
 }
