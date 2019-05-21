@@ -20,6 +20,8 @@ import org.unamedgroup.conference.service.GeneralService;
 import org.unamedgroup.conference.service.MyConferenceService;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * UserController
@@ -135,7 +137,6 @@ public class UserController {
         }
     }
 
-
     @ApiOperation(value = "用户姓名模糊匹配api")
     @RequestMapping(value = "/userList", method = RequestMethod.GET)
     @ResponseBody
@@ -150,6 +151,110 @@ public class UserController {
             return new FailureInfo(7002, "根据姓名匹配用户失败！");
         } else {
             return new SuccessInfo(list);
+        }
+    }
+
+    @ApiOperation(value = "用户注册")
+    @RequestMapping(value = "/signup", method = RequestMethod.POST)
+    @ResponseBody
+    public Object signup(String password, String realName, String department, String email, String phoneNumber, Integer userGroup) {
+        try {
+            // 密码相关的逻辑验证
+            if (password == null || password.equals("")) {
+                return new FailureInfo(7100, "密码为空，请重试！");
+            }
+            if (password.length() < 6) {
+                return new FailureInfo(7101, "密码长度小于6，请更换一个长一点的密码。");
+            }
+
+
+            if (userRepository.getUserByEmail(email) != null) {
+                return new FailureInfo(7103, "该邮箱已注册，不可使用！");
+            }
+            if (generalService.checkEmail(email) != true) {
+                return new FailureInfo(7102, "邮箱格式不正确");
+            }
+
+            if (userRepository.getUserByPhoneNumber(phoneNumber) != null) {
+                return new FailureInfo(7105, "该手机号码已注册，不可使用！");
+            }
+            if (generalService.checkMoiblePhone(phoneNumber) != true) {
+                return new FailureInfo(7104, "手机号码格式不正确");
+            }
+
+            User newUser = new User(password, realName, department, email, phoneNumber, userGroup, null);
+            userRepository.save(newUser);
+
+            return new SuccessInfo(newUser.getUserID());
+
+        } catch (Exception e) {
+            System.err.println("遇到错误，请核实：");
+            System.err.println(e.toString());
+            return new FailureInfo(7005, "注册遇到未知错误，请通知管理员检查系统日志，谢谢！");
+        }
+    }
+
+
+    @ApiOperation(value = "修改密码")
+    @RequestMapping(value = "/password", method = RequestMethod.POST)
+    @ResponseBody
+    public Object changePassword(String oldPassword, String newPassword) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+
+        try {
+            User user = generalService.getLoginUser();
+            if (user.getPassword().equals(oldPassword) == false) {
+                return new FailureInfo(7003, "原密码不正确。");
+            }
+
+            if (newPassword.length() < 6) {
+                return new FailureInfo(7101, "密码长度小于6，请更换一个长一点的密码。");
+            }
+
+            user.setPassword(newPassword);
+            userRepository.save(user);
+            return new SuccessInfo("密码修改成功！");
+        } catch (Exception e) {
+            System.err.println("密码修改失败！");
+            System.err.println(e.toString());
+            return new FailureInfo(7004, "密码修改遇到未知错误。");
+        }
+    }
+
+    @ApiOperation(value = "更新用户个人信息")
+    @RequestMapping(value = "/currentUserInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public Object updateCurrentUserInfo(String email, String phoneNumber) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+
+        try {
+            User user = generalService.getLoginUser();
+            if (userRepository.getUserByEmail(email) != null) {
+                return new FailureInfo(7103, "该邮箱已注册，不可使用！");
+            }
+            if (generalService.checkEmail(email) != true) {
+                return new FailureInfo(7102, "邮箱格式不正确");
+            }
+            user.setEmail(email);
+            if (userRepository.getUserByPhoneNumber(phoneNumber) != null) {
+                return new FailureInfo(7105, "该手机号码已注册，不可使用！");
+            }
+            if (generalService.checkMoiblePhone(phoneNumber) != true) {
+                return new FailureInfo(7104, "手机号码格式不正确");
+            }
+            user.setPhoneNumber(phoneNumber);
+            userRepository.save(user);
+            return new SuccessInfo("个人信息更新成功！");
+        } catch (Exception e) {
+            System.err.println("个人信息更新失败！");
+            System.err.println(e.toString());
+            return new FailureInfo(7005, "个人信息更新遇到未知错误。");
         }
     }
 }

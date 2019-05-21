@@ -8,7 +8,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.unamedgroup.conference.dao.ConferenceRepository;
 import org.unamedgroup.conference.dao.ParticipantsRepository;
 import org.unamedgroup.conference.feature.service.IDetectFaceService;
-import org.unamedgroup.conference.service.impl.Message;
 
 import java.io.FileNotFoundException;
 import java.text.ParseException;
@@ -40,6 +39,6 @@ public class ApplicationTests {
 
     @Test
     public void test() {
-        Message.sendMessage("1");
+//        Message.sendMessage("1");
     }
 }
