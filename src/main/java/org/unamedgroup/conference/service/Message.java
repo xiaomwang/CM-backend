@@ -1,11 +1,14 @@
-package org.unamedgroup.conference.service.impl;
+package org.unamedgroup.conference.service;
 
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
 import com.github.qcloudsms.httpclient.HTTPException;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.unamedgroup.conference.entity.User;
+import org.unamedgroup.conference.service.GeneralService;
+import org.unamedgroup.conference.service.impl.MySmsSingleSender;
 
 import java.io.IOException;
 
@@ -16,6 +19,7 @@ import java.io.IOException;
  * @author liumengxiao
  * @date 2019/5/17
  */
+@Component
 public class Message {
     // 短信应用SDK AppID
     private static final int appid = 1400208768;
@@ -27,9 +31,9 @@ public class Message {
     private static final String smsSign = "";
 
     @Autowired
-    private static GeneralServiceImpl generalService;
+    private GeneralService generalService;
 
-    public static Boolean attendance(String conferenceName, String time, String roomName) {
+    public Boolean attendance(String conferenceName, String time, String roomName) {
         try {
             templateId = 334604;
             String[] params = {conferenceName, time, roomName};
@@ -42,7 +46,7 @@ public class Message {
         return false;
     }
 
-    public static Boolean cancel(String year, String month, String day, String time, String roomName, String conferenceName) {
+    public Boolean cancel(String year, String month, String day, String time, String roomName, String conferenceName) {
         try {
             templateId = 334605;
             String[] params = {year, month, day, time, roomName, conferenceName};
@@ -55,7 +59,7 @@ public class Message {
         return false;
     }
 
-    private static Boolean sendMessage(String[] params) {
+    private Boolean sendMessage(String[] params) {
         try {
             User user = generalService.getLoginUser();
             SmsSingleSender ssender = new MySmsSingleSender(appid, appkey);
