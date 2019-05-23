@@ -50,6 +50,7 @@ public interface GeneralService {
 
     /**
      * Email有效项检查
+     *
      * @param email 电子邮箱
      * @return 有效性检查结果
      */
@@ -57,8 +58,17 @@ public interface GeneralService {
 
     /**
      * 电话号码有效性检查
+     *
      * @param phoneNumber 中国大陆手机号码
      * @return 有效性检查结果
      */
     public Boolean checkMoiblePhone(String phoneNumber);
+
+    /**
+     * 检查用户所属用户组，返回用户是否有权管理其他用户
+     *
+     * @return 检查结果
+     */
+    public Boolean checkUserGroup();
+
 }
