@@ -22,6 +22,12 @@ public class FailureInfo {
         message = "登录验证失败，请检查是否登录！";
     }
 
+    public FailureInfo(Integer status) {
+        if (status == -7) {
+            message = "用户权限不足，无法使用相应功能。";
+        }
+    }
+
     public FailureInfo(Integer status, String message) {
         this.status = status;
         this.message = message;
