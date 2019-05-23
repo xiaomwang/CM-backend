@@ -540,6 +540,61 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     }
 
     @Override
+    public Room locationShift(Room room) {
+        List<String> nums = new ArrayList<>();
+        nums.add("十");
+        nums.add("一");
+        nums.add("二");
+        nums.add("三");
+        nums.add("四");
+        nums.add("五");
+        nums.add("六");
+        nums.add("七");
+        nums.add("八");
+        nums.add("九");
+
+        String str = room.getLocation();
+        Integer num = -1;
+        try {
+            num = Integer.valueOf(str);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(num<0) {
+            return room;
+        }
+        if(num == 0) {
+            try {
+                throw new Exception("楼层为0，数据异常");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if(num > 99) {
+            try {
+                throw new Exception("层数过高，数据异常");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (num/10==0) {
+            str = nums.get(num);
+        } else if (num/10==1) {
+            if (num%10==0) {
+                str = "十";
+            }
+            else {
+                str = "十" + nums.get(num%10);
+            }
+        } else {
+            str = nums.get(num/10) + "十" + nums.get(num%10);
+        }
+        str = str+"层";
+        room.setLocation(str);
+        return room;
+    }
+
+    @Override
     public List<Room> roomByBuilding(Building building) {
         return roomRepository.getRoomsByBuilding(building);
     }
