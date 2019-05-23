@@ -131,4 +131,19 @@ public class GeneralServiceImpl implements GeneralService {
         return true;
     }
 
+    @Override
+    public Boolean checkUserGroup() {
+        try {
+            User user = getLoginUser();
+
+            if (user.getUserGroup() != 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }
