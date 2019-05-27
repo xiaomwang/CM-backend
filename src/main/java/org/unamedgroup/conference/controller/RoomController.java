@@ -178,4 +178,15 @@ public class RoomController {
             return new FailureInfo(6001, "处理房间填充失败!");
         }
     }
+
+    @GetMapping(value = "catalogue")
+    public Object catalogue() {
+        try {
+            List<String> catalogueList = guideQueryService.getAllCatalogue();
+            return new SuccessInfo(catalogueList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new FailureInfo(6005, "获取会议室类型列表出错！");
+        }
+    }
 }

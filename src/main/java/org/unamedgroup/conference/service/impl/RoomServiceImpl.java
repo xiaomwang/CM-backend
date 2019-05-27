@@ -595,6 +595,11 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     }
 
     @Override
+    public List<String> getAllCatalogue() {
+        return roomRepository.findDistinctCatalogue();
+    }
+
+    @Override
     public List<Room> roomByBuilding(Building building) {
         return roomRepository.getRoomsByBuilding(building);
     }

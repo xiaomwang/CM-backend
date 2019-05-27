@@ -1,5 +1,6 @@
 package org.unamedgroup.conference.dao;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.unamedgroup.conference.entity.Building;
@@ -55,4 +56,11 @@ public interface RoomRepository extends CrudRepository<Room, Integer> {
     List<Room> findAll();
 
     List<Room> getRoomsByBuilding(Integer building);
+
+    /**
+     * 去重查询所有的会议室类型
+     * @return 会议室类型列表
+     */
+    @Query(value = "select distinct catalogue from Room ")
+    List<String> findDistinctCatalogue();
 }

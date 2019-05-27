@@ -83,4 +83,10 @@ public interface GuideQueryService {
      * @return 转换之后的房间信息
      */
     Room locationShift(Room room);
+
+    /**
+     * 去重查询所有会议室类别
+     * @return 会议室类别列表
+     */
+    List<String> getAllCatalogue();
 }
