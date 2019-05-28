@@ -1,6 +1,8 @@
 package org.unamedgroup.conference.controller;
 
 import io.swagger.annotations.*;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.service.GuideQueryService;
 import org.unamedgroup.conference.service.QuickCheckService;
 import org.unamedgroup.conference.service.RelevanceQueryService;
+import org.unamedgroup.conference.service.RoomManageService;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -33,6 +36,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/room")
 public class RoomController {
+    @Autowired
+    RoomManageService roomManageService;
     @Autowired
     QuickCheckService quickCheckService;
     @Autowired
@@ -187,6 +192,58 @@ public class RoomController {
         } catch (Exception e) {
             e.printStackTrace();
             return new FailureInfo(6005, "获取会议室类型列表出错！");
+        }
+    }
+
+    @GetMapping(value = "list/room")
+    public Object listRoom(Integer pageCurrent, Integer pageSize) {
+        try {
+            List<Room> roomList = roomManageService.getPageRoomInfo(pageCurrent, pageSize);
+            return new SuccessInfo(roomList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new FailureInfo(6006, "分页查询所有房间信息失败！");
+        }
+    }
+
+    @GetMapping(value = "total")
+    public Object total() {
+        try {
+            Integer total = roomManageService.totalPageRomInfo();
+            return new SuccessInfo(total);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new FailureInfo(6007, "获取会议室信息总条数失败！");
+        }
+    }
+
+    @PostMapping(value = "delete")
+    public Object delete(Integer roomID) {
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            if (!subject.isAuthenticated()) {
+                return new FailureInfo();
+            }
+            Integer count = roomManageService.deleteRoomByRoomID(roomID);
+            return new SuccessInfo(count);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new FailureInfo(6008, "删除会议室记录失败！");
+        }
+    }
+
+    @PostMapping(value = "modify")
+    public Object modify(Room room) {
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            if(!subject.isAuthenticated()) {
+                return new FailureInfo();
+            }
+            Room roomAfter = roomManageService.modifyRoom(room);
+            return new SuccessInfo(roomAfter);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new FailureInfo(6009, "修改会议室信息失败！");
         }
     }
 }

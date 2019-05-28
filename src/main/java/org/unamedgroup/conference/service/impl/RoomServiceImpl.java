@@ -9,10 +9,7 @@ import org.unamedgroup.conference.entity.Building;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
 import org.unamedgroup.conference.entity.temp.RoomTime;
-import org.unamedgroup.conference.service.GeneralService;
-import org.unamedgroup.conference.service.GuideQueryService;
-import org.unamedgroup.conference.service.QuickCheckService;
-import org.unamedgroup.conference.service.RelevanceQueryService;
+import org.unamedgroup.conference.service.*;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -28,7 +25,7 @@ import java.util.*;
  */
 
 @Component
-public class RoomServiceImpl implements QuickCheckService, GuideQueryService, RelevanceQueryService {
+public class RoomServiceImpl implements QuickCheckService, GuideQueryService, RelevanceQueryService, RoomManageService {
 
     @Autowired
     RoomRepository roomRepository;
@@ -602,5 +599,25 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     @Override
     public List<Room> roomByBuilding(Building building) {
         return roomRepository.getRoomsByBuilding(building);
+    }
+
+    @Override
+    public List<Room> getPageRoomInfo(Integer pageCurrent, Integer pageSize) {
+        return roomRepository.findRoomPage((pageCurrent-1)*pageSize, pageSize);
+    }
+
+    @Override
+    public Integer totalPageRomInfo() {
+        return roomRepository.countRoom();
+    }
+
+    @Override
+    public Integer deleteRoomByRoomID(Integer roomID) {
+        return roomRepository.deleteByRoomID(roomID);
+    }
+
+    @Override
+    public Room modifyRoom(Room room) {
+        return roomRepository.save(room);
     }
 }

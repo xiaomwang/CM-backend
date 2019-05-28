@@ -1,8 +1,11 @@
 package org.unamedgroup.conference.dao;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.unamedgroup.conference.entity.Building;
 import org.unamedgroup.conference.entity.Room;
 
@@ -63,4 +66,24 @@ public interface RoomRepository extends CrudRepository<Room, Integer> {
      */
     @Query(value = "select distinct catalogue from Room ")
     List<String> findDistinctCatalogue();
+
+    /**
+     * 分页查询房间信息
+     * @param pageNumber 起始索引
+     * @param pageSize 每页容量
+     * @return 房间页信息
+     */
+    @Query(value = "select * from room limit ?1, ?2", nativeQuery = true)
+    List<Room> findRoomPage(Integer pageNumber, Integer pageSize);
+
+    /**
+     * 查询房间信息总条数
+     * @return 房间信息条数
+     */
+    @Query(value = "select count(*) from room", nativeQuery = true)
+    Integer countRoom();
+
+    @Transactional
+    @Modifying
+    Integer deleteByRoomID(Integer roomID);
 }

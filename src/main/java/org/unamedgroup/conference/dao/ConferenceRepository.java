@@ -132,7 +132,6 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
     /**
      * 按照升序查询与用户相关的所有会议
      *
-     * @param status              会议状态
      * @param user                用户id
      * @param participantSequence 与会人序列
      * @param pageNumber          起始索引
