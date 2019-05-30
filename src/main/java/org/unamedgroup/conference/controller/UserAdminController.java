@@ -38,9 +38,9 @@ public class UserAdminController {
     GeneralService generalService;
 
     @ApiOperation(value = "列出所有用户")
-    @RequestMapping(value = "/listAllUsers", method = RequestMethod.GET)
+    @RequestMapping(value = "/allUsers", method = RequestMethod.GET)
     @ResponseBody
-    public Object listAllUsers() {
+    public Object listAllUsers(Integer pageNumber) {
         //登录有效性验证
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated() == false) {
@@ -49,8 +49,13 @@ public class UserAdminController {
             return new FailureInfo(-7);
         }
 
+        if (pageNumber < 1) {
+            return new FailureInfo(8007, "输入的页数非法");
+        } else {
+            pageNumber -= 1;
+        }
         try {
-            List<User> users = userRepository.findAll();
+            List<User> users = userRepository.findUsersByPage(pageNumber * 10);
             List<UserInfo> userList = new ArrayList<UserInfo>();
             for (int i = 0; i < users.size(); ++i) {
                 userList.add(new UserInfo(users.get(i)));
@@ -110,6 +115,20 @@ public class UserAdminController {
             return new SuccessInfo("用户手机更新成功！");
         } catch (Exception e) {
             return new FailureInfo(8005, "用户手机更新遇到错误，请检查。");
+        }
+    }
+
+    @ApiOperation(value = "统计用户页数")
+    @RequestMapping(value = "/pageNumber", method = RequestMethod.GET)
+    @ResponseBody
+    public Object allNumbers() {
+        try {
+            Integer pageNumbers = userRepository.countUsers() / 10 + 1;
+            return new SuccessInfo(pageNumbers);
+        } catch (Exception e) {
+            System.err.println("统计用户数出错。");
+            System.err.println(e.toString());
+            return new FailureInfo(8006, "统计用户数出错。");
         }
     }
 }
