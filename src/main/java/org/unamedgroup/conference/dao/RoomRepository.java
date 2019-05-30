@@ -58,7 +58,7 @@ public interface RoomRepository extends CrudRepository<Room, Integer> {
     @Override
     List<Room> findAll();
 
-    List<Room> getRoomsByBuilding(Integer building);
+//    List<Room> getRoomsByBuilding(Integer building);
 
     /**
      * 去重查询所有的会议室类型
@@ -86,4 +86,17 @@ public interface RoomRepository extends CrudRepository<Room, Integer> {
     @Transactional
     @Modifying
     Integer deleteByRoomID(Integer roomID);
+
+    /**
+     * 会议室全信息模糊匹配
+     * @param id 会议室编号
+     * @param capacity 会议室容量
+     * @param catalogue 会议室类型
+     * @param location 会议室位置
+     * @param name 会议室名称
+     * @param building 会议室所在楼宇
+     * @return 匹配到的会议室信息列表
+     */
+    List<Room> findByRoomIDOrCapacityOrCatalogueLikeOrLocationLikeOrNameLikeOrBuilding(Integer id, Integer capacity, String catalogue, String location, String name, Building building);
+
 }

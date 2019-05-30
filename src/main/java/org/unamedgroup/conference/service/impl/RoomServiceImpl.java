@@ -620,4 +620,24 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     public Room modifyRoom(Room room) {
         return roomRepository.save(room);
     }
+
+    @Override
+    public Set<Room> allFuzzyMatching(String params) {
+        Set<Room> roomSet = new HashSet<>();
+        String[] paramArr = params.split(" ");
+        for(String param : paramArr) {
+            String paramStr = String.valueOf("%"+param+"%");
+            Integer paramInt;
+            try {
+                paramInt = Integer.valueOf(param);
+            } catch (NumberFormatException e) {
+                paramInt = -1;
+            }
+            Building building = new Building();
+            building.setBuildingID(paramInt);
+            List<Room> roomList = roomRepository.findByRoomIDOrCapacityOrCatalogueLikeOrLocationLikeOrNameLikeOrBuilding(paramInt, paramInt, paramStr, paramStr, paramStr, building);
+            roomSet.addAll(roomList);
+        }
+        return roomSet;
+    }
 }

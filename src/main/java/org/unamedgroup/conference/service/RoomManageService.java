@@ -3,6 +3,7 @@ package org.unamedgroup.conference.service;
 import org.unamedgroup.conference.entity.Room;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Author: 白振宇
@@ -36,4 +37,11 @@ public interface RoomManageService {
      * @return 修改后的会议室信息
      */
     Room modifyRoom(Room room);
+
+    /**
+     * 房间信息全字段模糊匹配
+     * @param params 参数（多个参数，以空格划分）
+     * @return 房间信息集合
+     */
+    Set<Room> allFuzzyMatching(String params);
 }

@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * RoomController
@@ -244,6 +245,17 @@ public class RoomController {
         } catch (Exception e) {
             e.printStackTrace();
             return new FailureInfo(6009, "修改会议室信息失败！");
+        }
+    }
+
+    @GetMapping(value = "match")
+    public Object match(String params) {
+        try {
+            Set<Room> roomSet = roomManageService.allFuzzyMatching(params);
+            return new SuccessInfo(roomSet);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new FailureInfo(6010, "模糊匹配异常！");
         }
     }
 }
