@@ -123,7 +123,7 @@ public class UserAdminController {
     @ResponseBody
     public Object allNumbers() {
         try {
-            Integer pageNumbers = userRepository.countUsers() / 10 + 1;
+            Integer pageNumbers = userRepository.countUsers();
             return new SuccessInfo(pageNumbers);
         } catch (Exception e) {
             System.err.println("统计用户数出错。");
@@ -131,4 +131,31 @@ public class UserAdminController {
             return new FailureInfo(8006, "统计用户数出错。");
         }
     }
+
+    @ApiOperation(value = "用户基本信息变更（姓名、部门）")
+    @RequestMapping(value = "/basicInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public Object basicInfo(Integer userID, String realName, String department) {
+        //登录有效性验证
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        } else if (generalService.checkUserGroup() == false) {
+            return new FailureInfo(-7);
+        }
+
+        try {
+            User user = userRepository.getUserByUserID(userID);
+            user.setRealName(realName);
+            user.setDepartment(department);
+            userRepository.save(user);
+            return new SuccessInfo("用户基本信息更新成功！");
+        } catch (Exception e) {
+            return new FailureInfo(8007, "用户基本信息更新遇到错误，请检查。");
+        }
+
+
+
+    }
+
 }
