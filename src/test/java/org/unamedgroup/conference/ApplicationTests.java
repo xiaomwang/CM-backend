@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.unamedgroup.conference.dao.ConferenceRepository;
 import org.unamedgroup.conference.dao.ParticipantsRepository;
-import org.unamedgroup.conference.feature.service.IDetectFaceService;
+import org.unamedgroup.conference.dao.UserRepository;
 
 import java.io.FileNotFoundException;
 import java.text.ParseException;
@@ -19,8 +19,8 @@ public class ApplicationTests {
     @Autowired
     ConferenceRepository conferenceRepository;
 
-    @Autowired
-    IDetectFaceService detectFaceService;
+//    @Autowired
+//    IDetectFaceService detectFaceService;
     @Autowired
     ParticipantsRepository participantsRepository;
 
@@ -28,6 +28,7 @@ public class ApplicationTests {
     public void contextLoads() throws ParseException {
 
     }
+
     @Test
     public void faceDetecture() throws FileNotFoundException {
 //        File file = new File("E:\\IDEA\\zhoutao3.jpg");
@@ -36,9 +37,14 @@ public class ApplicationTests {
 //        double result = detectFaceService.compareFace(file,1);
 //        System.out.println(result);
     }
+    @Autowired
+    UserRepository userRepository;
 
     @Test
     public void test() {
-//        Message.sendMessage("1");
+        System.out.println(userRepository.countUsers());
+        System.out.println(userRepository.findUsersByPage(1));
     }
+
+
 }
