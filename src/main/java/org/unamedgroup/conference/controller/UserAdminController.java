@@ -77,6 +77,9 @@ public class UserAdminController {
             if (generalService.checkEmail(email) == false) {
                 return new FailureInfo(8001, "修改的用户邮箱格式非法。");
             }
+            if (userRepository.getUserByEmail(email) != null) {
+                return new FailureInfo(8006, "邮箱已存在！");
+            }
             User user = userRepository.getUserByUserID(userID);
             user.setEmail(email);
             userRepository.save(user);
@@ -102,6 +105,9 @@ public class UserAdminController {
         try {
             if (generalService.checkMoiblePhone(phoneNumber) == false) {
                 return new FailureInfo(8003, "修改的用户手机号码格式非法。");
+            }
+            if (userRepository.getUserByPhoneNumber(phoneNumber) != null) {
+                return new FailureInfo(8007, " 手机已存在！");
             }
             User user = userRepository.getUserByUserID(userID);
             user.setPhoneNumber(phoneNumber);
