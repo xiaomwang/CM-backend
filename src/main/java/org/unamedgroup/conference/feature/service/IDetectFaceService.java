@@ -1,6 +1,5 @@
 package org.unamedgroup.conference.feature.service;
 
-import com.arcsoft.face.FaceFeature;
 
 import java.io.File;
 import java.io.InputStream;
@@ -16,14 +15,14 @@ public interface IDetectFaceService {
      * @param file
      * @return faceFeature
      */
-    public FaceFeature addFaceFeature(File file, Integer userID);
+    public int detectFeature(File file, Integer userID);
 
     /**
      * 根据图片信息提取到人脸的特征信息
      * @param inputStream
      * @return faceFeature
      */
-    public FaceFeature addFaceFeature(InputStream inputStream, Integer userID);
+    public int detectFeature(InputStream inputStream, Integer userID);
 
     /**
      * 根据人脸的特征信息进行人脸匹配
