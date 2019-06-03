@@ -11,6 +11,7 @@ import org.unamedgroup.conference.entity.Building;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
+import org.unamedgroup.conference.entity.temp.PageRoom;
 import org.unamedgroup.conference.entity.temp.RoomTime;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.service.GuideQueryService;
@@ -259,6 +260,18 @@ public class RoomController {
         try {
             Set<Room> roomSet = roomManageService.allFuzzyMatching(params);
             return new SuccessInfo(roomSet);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new FailureInfo(6010, "模糊匹配异常！");
+        }
+    }
+
+    @GetMapping(value = "match/page")
+    public Object matchPage(String params, Integer pageCurrent, Integer pageSize) {
+        try {
+            Set<Room> roomSet = roomManageService.allFuzzyMatching(params);
+            PageRoom roomSetPage = roomManageService.pageRoomSet(roomSet, pageCurrent, pageSize);
+            return new SuccessInfo(roomSetPage);
         } catch (Exception e) {
             e.printStackTrace();
             return new FailureInfo(6010, "模糊匹配异常！");

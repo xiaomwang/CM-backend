@@ -17,6 +17,6 @@ public class PageRoom {
 
     public PageRoom(Integer total, Set<Room> roomSet) {
         this.total = total;
-        this.roomSet.containsAll(roomSet);
+        this.roomSet = roomSet;
     }
 }
