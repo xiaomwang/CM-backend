@@ -49,7 +49,7 @@ public class ConferenceServiceImpl implements MyConferenceService, ConferenceMan
         if(participants.size()==0) {
             participants.add(-1);
         }
-        List<Conference> conferenceList = conferenceRepository.findMyConference(userId, participants, (pageCurrent-1)*pageSize, pageSize);
+        List<Conference> conferenceList = conferenceRepository.findMyConference(1, userId, participants, (pageCurrent-1)*pageSize, pageSize);
         return conferenceList;
     }
 
@@ -59,7 +59,7 @@ public class ConferenceServiceImpl implements MyConferenceService, ConferenceMan
         if(participants.size()==0) {
             participants.add(-1);
         }
-        return conferenceRepository.countMyConference(userId, participants);
+        return conferenceRepository.countMyConference(1, userId, participants);
     }
 
     @Override

@@ -516,8 +516,8 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
             return null;
         }
         /*遍历会议室并将每个会议室的会议列表分开存放哈希中*/
-        Map<Room, List<Conference>> mapStart = new LinkedHashMap<>(16);
-        Map<Room, List<Conference>> mapEnd = new LinkedHashMap<>(16);
+        Map<Room, List<Conference>> mapStart = new HashMap<>(16);
+        Map<Room, List<Conference>> mapEnd = new HashMap<>(16);
         for (Room room : roomList) {
             mapStart.put(room, conferenceRepository.findByRoomAndStatusAndStartTimeBetween(room, 1, startDate, endDate));
             mapEnd.put(room, conferenceRepository.findByRoomAndStatusAndEndTimeBetweenAndStartTimeBefore(room, 1, startDate, endDate, startDate));

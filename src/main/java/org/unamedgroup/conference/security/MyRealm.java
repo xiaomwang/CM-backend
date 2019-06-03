@@ -24,9 +24,16 @@ import org.unamedgroup.conference.service.UserManageService;
 
 @Service
 public class MyRealm extends AuthorizingRealm {
+//    private UserService userService;
+//    @Autowired
+//    private UserManageService userService;
 
     @Autowired
     private UserRepository userRepository;
+
+//    public void setUserService(UserManageService userService) {
+//        this.userService = userService;
+//    }
 
     /**
      * 大坑！必须重写此方法，不然Shiro会报错
@@ -38,6 +45,7 @@ public class MyRealm extends AuthorizingRealm {
 
     /**
      * 只有当需要检测用户权限的时候才会调用此方法，例如checkRole,checkPermission之类的
+     * 这一段是干嘛的？？？？
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
@@ -74,7 +82,7 @@ public class MyRealm extends AuthorizingRealm {
         }
 
         // 利用数据库中密码hash作为secret，检测了phone_number和password_hash的一致性。（取巧）
-        if (!JWTUtil.verify(token, phone_number, user.getPassword())) {
+        if (!JWTUtil.verify(token, phone_number, user.getPasswordHash())) {
             throw new AuthenticationException("Username or Password Error");
         }
         return new SimpleAuthenticationInfo(token, token, "my_realm");

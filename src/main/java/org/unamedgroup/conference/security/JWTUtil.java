@@ -19,7 +19,7 @@ import java.util.Date;
  */
 public class JWTUtil {
 
-    // 过期时间 2h
+    // 过期时间(15day)？？还是2h？
     private static final long EXPIRE_TIME = 2 * 60 * 60 * 1000;
 
     /**

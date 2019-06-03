@@ -63,8 +63,8 @@ public class BuildingController {
         }
     }
 
-    @GetMapping(value = "list/address")
-    public Object listAddress(Integer buildingID) {
+    @GetMapping(value = "list/id")
+    public Object listId(Integer buildingID) {
         try {
             return new SuccessInfo(listBuildingService.listAddress(buildingID));
         } catch (Exception e) {
@@ -73,8 +73,8 @@ public class BuildingController {
         }
     }
 
-    @GetMapping(value = "list/id")
-    public Object listId(String address) {
+    @GetMapping(value = "list/address")
+    public Object listAddress(String address) {
         try {
             return new SuccessInfo(listBuildingService.listBuilding(address));
         } catch (Exception e) {

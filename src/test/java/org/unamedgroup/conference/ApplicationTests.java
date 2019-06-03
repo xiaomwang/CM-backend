@@ -8,7 +8,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.unamedgroup.conference.dao.ConferenceRepository;
 import org.unamedgroup.conference.dao.ParticipantsRepository;
 import org.unamedgroup.conference.feature.service.IDetectFaceService;
-import org.unamedgroup.conference.service.GeneralService;
 import org.unamedgroup.conference.service.impl.Message;
 
 import java.io.FileNotFoundException;
@@ -38,12 +37,9 @@ public class ApplicationTests {
 //        double result = detectFaceService.compareFace(file,1);
 //        System.out.println(result);
     }
-    @Autowired
-    GeneralService generalService;
 
     @Test
     public void test() {
-
-        Message.attendance("测试会议","13:00", "测试会议室");
+        Message.sendMessage("1");
     }
 }

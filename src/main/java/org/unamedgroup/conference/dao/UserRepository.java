@@ -46,12 +46,4 @@ public interface UserRepository extends CrudRepository<User, Integer> {
      * @return 用户实体列表
      */
     List<User> findUsersByRealNameLike(String realName);
-
-    /**
-     * 通过电子邮箱返回用户实体
-     *
-     * @param email 电子邮箱
-     * @return 用户实体
-     */
-    User getUserByEmail(String email);
 }

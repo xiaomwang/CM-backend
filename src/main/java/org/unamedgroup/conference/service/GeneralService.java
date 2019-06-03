@@ -1,6 +1,5 @@
 package org.unamedgroup.conference.service;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.User;
 
@@ -43,32 +42,7 @@ public interface GeneralService {
 
     /**
      * 返回当前登录用户
-     *
      * @return 当前登录的用户
      */
     public User getLoginUser();
-
-    /**
-     * Email有效项检查
-     *
-     * @param email 电子邮箱
-     * @return 有效性检查结果
-     */
-    public Boolean checkEmail(String email);
-
-    /**
-     * 电话号码有效性检查
-     *
-     * @param phoneNumber 中国大陆手机号码
-     * @return 有效性检查结果
-     */
-    public Boolean checkMoiblePhone(String phoneNumber);
-
-    /**
-     * 检查用户所属用户组，返回用户是否有权管理其他用户
-     *
-     * @return 检查结果
-     */
-    public Boolean checkUserGroup();
-
 }

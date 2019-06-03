@@ -34,10 +34,7 @@ public class User {
     }
 
     public User(String password, String realName, String department, String email, String phoneNumber, Integer userGroup, String feature) {
-        if (getPasswordHash(password) == null) {
-            throw new NullPointerException();
-        }
-        this.password = getPasswordHash(password);
+        this.password = password;
         this.realName = realName;
         this.department = department;
         this.email = email;
@@ -46,7 +43,7 @@ public class User {
         this.feature = feature;
     }
 
-    public static String getPasswordHash(String password) {
+    public String getPasswordHash() {
         try {
             if (password != null) {
                 Integer passwordHash = password.hashCode();

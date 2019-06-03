@@ -31,14 +31,14 @@ public class BuildingServiceImpl implements ListBuildingService {
     }
 
     @Override
-    public List<String> listAddress(Integer buildingID) {
-        List<String> addressList;
+    public List<Building> listAddress(Integer buildingID) {
+        List<Building> buildings;
         if(buildingID.equals(-1)) {
-            addressList = buildingRepository.findDistinctAddress();
+            buildings = buildingRepository.findAll();
         } else {
-            addressList = new ArrayList<>();
-            addressList.add(buildingRepository.getBuildingByBuildingID(buildingID).getAddress());
+            buildings = new ArrayList<>();
+            buildings.add(buildingRepository.getBuildingByBuildingID(buildingID));
         }
-        return addressList;
+        return buildings;
     }
 }
