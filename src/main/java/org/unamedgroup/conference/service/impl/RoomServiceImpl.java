@@ -646,6 +646,16 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
 
     @Override
     public PageRoom pageRoomSet(Set<Room> roomSet, Integer pageCurrent, Integer pageSize) {
+//        int start = (pageCurrent-1)*pageSize;
+//        Set<Room> roomSetPage = null;
+//        if(roomSet.isEmpty() || roomSet.size()<=start) {
+//            roomSetPage = Collections.emptySet();
+//        } else {
+//            int realSize =
+//        }
+//
+//        PageRoom pageRoom = new PageRoom(roomSet.size(), roomSetPage);
+
         return null;
     }
 }

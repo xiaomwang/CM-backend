@@ -14,8 +14,9 @@ import java.util.Set;
 public class PageRoom {
     Integer total;
     Set<Room> roomSet;
-     PageRoom(Integer total, Set<Room> roomSet) {
-         this.total = total;
-         this.roomSet.containsAll(roomSet);
-     }
+
+    public PageRoom(Integer total, Set<Room> roomSet) {
+        this.total = total;
+        this.roomSet.containsAll(roomSet);
+    }
 }

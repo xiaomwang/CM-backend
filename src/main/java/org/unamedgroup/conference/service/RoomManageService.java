@@ -48,10 +48,10 @@ public interface RoomManageService {
 
     /**
      * 将会议室集合分页处理
-     * @param roomSet
-     * @param pageCurrent
-     * @param pageSize
-     * @return
+     * @param roomSet 会议室集合（整）
+     * @param pageCurrent 当前页
+     * @param pageSize 页大小
+     * @return 会议室集合（分页）
      */
     PageRoom pageRoomSet(Set<Room> roomSet, Integer pageCurrent, Integer pageSize);
 }
