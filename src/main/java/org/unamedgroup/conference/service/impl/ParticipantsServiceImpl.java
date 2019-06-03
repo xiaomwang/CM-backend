@@ -21,7 +21,6 @@ import java.util.List;
 public class ParticipantsServiceImpl implements ManagingAttendeesService {
     @Autowired
     ParticipantsRepository participantsRepository;
-
     @Autowired
     UserRepository userRepository;
 
@@ -30,12 +29,12 @@ public class ParticipantsServiceImpl implements ManagingAttendeesService {
     public Boolean modifyParticipants(String userIds, Integer conferenceID) {
         List<Integer> userIdList = new ArrayList<>();
         String[] userIdArray = userIds.split(",");
-        for(int i=0; i<userIdArray.length; i++) {
+        for (int i = 0; i < userIdArray.length; i++) {
             userIdList.add(Integer.valueOf(userIdArray[i]));
         }
         try {
             participantsRepository.removeBySequenceID(conferenceID);
-            for(Integer userId : userIdList) {
+            for (Integer userId : userIdList) {
                 Participants participants = new Participants();
                 participants.setUserID(userId);
                 participants.setSequenceID(conferenceID);
@@ -51,7 +50,7 @@ public class ParticipantsServiceImpl implements ManagingAttendeesService {
     public List<ReturnUser> getParticipants(Integer conferenceID) {
         List<Participants> participantsList = participantsRepository.findBySequenceID(conferenceID);
         List<ReturnUser> userList = new ArrayList<>();
-        for(Participants participants : participantsList) {
+        for (Participants participants : participantsList) {
             User user = userRepository.getUserByUserID(participants.getUserID());
             ReturnUser returnUser = new ReturnUser(user);
             userList.add(returnUser);

@@ -8,9 +8,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.unamedgroup.conference.dao.ConferenceRepository;
 import org.unamedgroup.conference.dao.ParticipantsRepository;
 import org.unamedgroup.conference.dao.UserRepository;
+import org.unamedgroup.conference.entity.User;
+import org.unamedgroup.conference.service.Message;
 
 import java.io.FileNotFoundException;
 import java.text.ParseException;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -39,11 +42,15 @@ public class ApplicationTests {
     }
     @Autowired
     UserRepository userRepository;
-
+    @Autowired
+    Message message;
     @Test
     public void test() {
-        System.out.println(userRepository.countUsers());
-        System.out.println(userRepository.findUsersByPage(1));
+//        System.out.println(userRepository.countUsers());
+//        System.out.println(userRepository.findUsersByPage(1));
+        List<User> list = userRepository.findUsersByRealNameLike("周韬");
+        User user = list.get(0);
+        message.attendance("打死周韬","12:00","打死周韬房间");
     }
 
 
