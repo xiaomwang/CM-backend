@@ -1,31 +1,24 @@
 package org.unamedgroup.conference.controller;
 
-import com.arcsoft.face.FaceFeature;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.unamedgroup.conference.entity.temp.RoomTime;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.unamedgroup.conference.dao.UserRepository;
 import org.unamedgroup.conference.entity.Conference;
-import org.unamedgroup.conference.entity.User;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
-import org.unamedgroup.conference.feature.entity.util.ImageUtil;
+import org.unamedgroup.conference.feature.entity.util.Utils;
 import org.springframework.web.bind.annotation.*;
 import org.unamedgroup.conference.feature.service.IDetectFaceService;
 import org.unamedgroup.conference.security.JWTUtil;
 import org.unamedgroup.conference.service.GeneralService;
-import sun.misc.BASE64Decoder;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -73,12 +66,13 @@ public class BioFeatureController {
         Integer userID = userRepository.getUserByPhoneNumber(phone).getUserID();
 
         try {
-            InputStream inputStream = ImageUtil.base64InputStream(imgStr);
-            FaceFeature faceFeature = detectFaceService.addFaceFeature(inputStream, userID);
+            InputStream inputStream = Utils.base64InputStream(imgStr);
+            int result = detectFaceService.detectFeature(inputStream, 3);
             if (inputStream != null) {
                 inputStream.close();
+//                return new FailureInfo(4003, "输入数据出错" );
             }
-            if (faceFeature == null) {
+            if (result == -1) {
                 System.err.println("找不到人脸信息");
                 return new FailureInfo(4000,"找不到人脸信息" );
             }
@@ -109,7 +103,7 @@ public class BioFeatureController {
         // 格式化时间
         try {
             // 处理图片信息
-            InputStream inputStream = ImageUtil.base64InputStream(imgStr);
+            InputStream inputStream = Utils.base64InputStream(imgStr);
             //现在时间
             Date nowTime = new Date();
             //半个小时后时间
