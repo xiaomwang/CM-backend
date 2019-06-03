@@ -38,9 +38,9 @@ public class UserAdminController {
     GeneralService generalService;
 
     @ApiOperation(value = "列出所有用户")
-    @RequestMapping(value = "/listAllUsers", method = RequestMethod.GET)
+    @RequestMapping(value = "/allUsers", method = RequestMethod.GET)
     @ResponseBody
-    public Object listAllUsers() {
+    public Object listAllUsers(Integer pageNumber) {
         //登录有效性验证
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated() == false) {
@@ -49,8 +49,13 @@ public class UserAdminController {
             return new FailureInfo(-7);
         }
 
+        if (pageNumber < 1) {
+            return new FailureInfo(8007, "输入的页数非法");
+        } else {
+            pageNumber -= 1;
+        }
         try {
-            List<User> users = userRepository.findAll();
+            List<User> users = userRepository.findUsersByPage(pageNumber * 10);
             List<UserInfo> userList = new ArrayList<UserInfo>();
             for (int i = 0; i < users.size(); ++i) {
                 userList.add(new UserInfo(users.get(i)));
@@ -76,6 +81,9 @@ public class UserAdminController {
         try {
             if (generalService.checkEmail(email) == false) {
                 return new FailureInfo(8001, "修改的用户邮箱格式非法。");
+            }
+            if (userRepository.getUserByEmail(email) != null) {
+                return new FailureInfo(8006, "邮箱已存在！");
             }
             User user = userRepository.getUserByUserID(userID);
             user.setEmail(email);
@@ -103,6 +111,9 @@ public class UserAdminController {
             if (generalService.checkMoiblePhone(phoneNumber) == false) {
                 return new FailureInfo(8003, "修改的用户手机号码格式非法。");
             }
+            if (userRepository.getUserByPhoneNumber(phoneNumber) != null) {
+                return new FailureInfo(8007, " 手机已存在！");
+            }
             User user = userRepository.getUserByUserID(userID);
             user.setPhoneNumber(phoneNumber);
             userRepository.save(user);
@@ -112,4 +123,45 @@ public class UserAdminController {
             return new FailureInfo(8005, "用户手机更新遇到错误，请检查。");
         }
     }
+
+    @ApiOperation(value = "统计用户页数")
+    @RequestMapping(value = "/pageNumber", method = RequestMethod.GET)
+    @ResponseBody
+    public Object allNumbers() {
+        try {
+            Integer pageNumbers = userRepository.countUsers();
+            return new SuccessInfo(pageNumbers);
+        } catch (Exception e) {
+            System.err.println("统计用户数出错。");
+            System.err.println(e.toString());
+            return new FailureInfo(8006, "统计用户数出错。");
+        }
+    }
+
+    @ApiOperation(value = "用户基本信息变更（姓名、部门）")
+    @RequestMapping(value = "/basicInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public Object basicInfo(Integer userID, String realName, String department) {
+        //登录有效性验证
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        } else if (generalService.checkUserGroup() == false) {
+            return new FailureInfo(-7);
+        }
+
+        try {
+            User user = userRepository.getUserByUserID(userID);
+            user.setRealName(realName);
+            user.setDepartment(department);
+            userRepository.save(user);
+            return new SuccessInfo("用户基本信息更新成功！");
+        } catch (Exception e) {
+            return new FailureInfo(8007, "用户基本信息更新遇到错误，请检查。");
+        }
+
+
+
+    }
+
 }
