@@ -19,7 +19,7 @@ public interface ListBuildingService {
     /**
      * 根据楼宇id返回楼宇信息（如果楼宇id值为-1则返回全部楼宇信息）
      * @param buildingID 楼宇id
-     * @return 楼宇信息列表
+     * @return 地址列表
      */
-    List<Building> listAddress(Integer buildingID);
+    List<String> listAddress(Integer buildingID);
 }

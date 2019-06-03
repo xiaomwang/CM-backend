@@ -12,14 +12,14 @@ import org.unamedgroup.conference.dao.ConferenceRepository;
 import org.unamedgroup.conference.dao.UserRepository;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
-import org.unamedgroup.conference.entity.temp.RoomTime;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
-import org.unamedgroup.conference.security.JWTToken;
 import org.unamedgroup.conference.security.JWTUtil;
 import org.unamedgroup.conference.service.GeneralService;
 import org.unamedgroup.conference.service.ManagingAttendeesService;
 import org.unamedgroup.conference.service.MyConferenceService;
+import org.unamedgroup.conference.service.Message;
 
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -45,6 +45,8 @@ public class ConferenceController {
     GeneralService generalService;
     @Autowired
     ManagingAttendeesService managingAttendeesService;
+    @Autowired
+    Message message;
 
     /**
      * 预定会议
@@ -120,8 +122,8 @@ public class ConferenceController {
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
         }
-        String phone = JWTUtil.getPhoneNumber(subject.getPrincipal().toString());
-        Integer userId = userRepository.getUserByPhoneNumber(phone).getUserID();
+
+        Integer userId = generalService.getLoginUser().getUserID();
         Integer total = myConferenceService.getMyConferenceTotal(userId);
         if (total == null) {
             return new FailureInfo(3102, "会议信息总数拉取失败");
@@ -131,13 +133,32 @@ public class ConferenceController {
     }
 
     @ApiOperation(value = "取消会议api")
-    @RequestMapping(value = "/cancel", method = RequestMethod.GET)
+    @RequestMapping(value = "/cancel", method = RequestMethod.POST)
     @ResponseBody
     public Object cancel(Integer conferenceID) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+
         try {
             Conference conference = conferenceRepository.getConferenceByConferenceID(conferenceID);
             conference.setStatus(-1);  //-1表示会议被取消
             conferenceRepository.save(conference);
+
+            //短信提醒处理
+            try {
+                Calendar now = Calendar.getInstance();
+                now.setTime(conference.getStartTime());
+                String year = String.valueOf(now.get(Calendar.YEAR));
+                String month = String.valueOf(now.get(Calendar.MONTH) + 1);
+                String day = String.valueOf(now.get(Calendar.DAY_OF_MONTH));
+                String time = now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE);
+                message.cancel(year, month, day, time, conference.getRoom().getName(), conference.getSubject());
+            } catch (Exception e) {
+                return new FailureInfo(3008, "会议取消短信发送失败");
+            }
+
             return new SuccessInfo("会议取消成功！");
         } catch (Exception e) {
             System.err.println("会议取消出错！");
@@ -146,9 +167,14 @@ public class ConferenceController {
     }
 
     @ApiOperation(value = "驳回会议api")
-    @RequestMapping(value = "/reject", method = RequestMethod.GET)
+    @RequestMapping(value = "/reject", method = RequestMethod.POST)
     @ResponseBody
     public Object reject(Integer conferenceID) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+
         try {
             Conference conference = conferenceRepository.getConferenceByConferenceID(conferenceID);
             conference.setStatus(0);  //0表示会议被驳回
@@ -166,6 +192,7 @@ public class ConferenceController {
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
         }
+
         try {
             managingAttendeesService.modifyParticipants(userIdList, conferenceID);
         } catch (Exception e) {

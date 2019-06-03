@@ -1,5 +1,6 @@
 package org.unamedgroup.conference.dao;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.unamedgroup.conference.entity.Building;
@@ -36,4 +37,7 @@ public interface BuildingRepository extends CrudRepository<Building, Integer> {
      * @return 楼宇列表
      */
     List<Building> findByAddress(String address);
+
+    @Query(value = "select distinct address from Building ")
+    List<String> findDistinctAddress();
 }

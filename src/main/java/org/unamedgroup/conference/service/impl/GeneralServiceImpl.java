@@ -17,6 +17,8 @@ import org.unamedgroup.conference.service.GeneralService;
 
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * GeneralServiceImpl
@@ -85,6 +87,7 @@ public class GeneralServiceImpl implements GeneralService {
         return conferenceList;
     }
 
+    @Override
     public User getLoginUser() {
         String token = null;
         try {
@@ -99,6 +102,48 @@ public class GeneralServiceImpl implements GeneralService {
         }
         User user = userRepository.getUserByPhoneNumber(JWTUtil.getPhoneNumber(token));
         return user;
+    }
+
+    @Override
+    public Boolean checkEmail(String email) {
+        // 邮箱正则匹配
+        String emailCheck = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+        Pattern regex = Pattern.compile(emailCheck);
+        Matcher matcher = regex.matcher(email);
+        Boolean isMatched = matcher.matches();
+        if (isMatched == false) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public Boolean checkMoiblePhone(String phoneNumber) {
+        // 手机正则匹配
+        String mobileCheck = "^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\\d{8}$";
+        Pattern regex = Pattern.compile(mobileCheck);
+        Matcher matcher = regex.matcher(phoneNumber);
+        Boolean isMatched = matcher.matches();
+        if (isMatched == false) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean checkUserGroup() {
+        try {
+            User user = getLoginUser();
+
+            if (user.getUserGroup() != 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }
