@@ -9,10 +9,7 @@ import org.unamedgroup.conference.entity.Building;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
 import org.unamedgroup.conference.entity.temp.RoomTime;
-import org.unamedgroup.conference.service.GeneralService;
-import org.unamedgroup.conference.service.GuideQueryService;
-import org.unamedgroup.conference.service.QuickCheckService;
-import org.unamedgroup.conference.service.RelevanceQueryService;
+import org.unamedgroup.conference.service.*;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -28,7 +25,7 @@ import java.util.*;
  */
 
 @Component
-public class RoomServiceImpl implements QuickCheckService, GuideQueryService, RelevanceQueryService {
+public class RoomServiceImpl implements QuickCheckService, GuideQueryService, RelevanceQueryService, RoomManageService {
 
     @Autowired
     RoomRepository roomRepository;
@@ -540,7 +537,107 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     }
 
     @Override
+    public Room locationShift(Room room) {
+        List<String> nums = new ArrayList<>();
+        nums.add("十");
+        nums.add("一");
+        nums.add("二");
+        nums.add("三");
+        nums.add("四");
+        nums.add("五");
+        nums.add("六");
+        nums.add("七");
+        nums.add("八");
+        nums.add("九");
+
+        String str = room.getLocation();
+        Integer num = -1;
+        try {
+            num = Integer.valueOf(str);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(num<0) {
+            return room;
+        }
+        if(num == 0) {
+            try {
+                throw new Exception("楼层为0，数据异常");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if(num > 99) {
+            try {
+                throw new Exception("层数过高，数据异常");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (num/10==0) {
+            str = nums.get(num);
+        } else if (num/10==1) {
+            if (num%10==0) {
+                str = "十";
+            }
+            else {
+                str = "十" + nums.get(num%10);
+            }
+        } else {
+            str = nums.get(num/10) + "十" + nums.get(num%10);
+        }
+        str = str+"层";
+        room.setLocation(str);
+        return room;
+    }
+
+    @Override
+    public List<String> getAllCatalogue() {
+        return roomRepository.findDistinctCatalogue();
+    }
+
+    @Override
     public List<Room> roomByBuilding(Building building) {
         return roomRepository.getRoomsByBuilding(building);
+    }
+
+    @Override
+    public List<Room> getPageRoomInfo(Integer pageCurrent, Integer pageSize) {
+        return roomRepository.findRoomPage((pageCurrent-1)*pageSize, pageSize);
+    }
+
+    @Override
+    public Integer totalPageRomInfo() {
+        return roomRepository.countRoom();
+    }
+
+    @Override
+    public Integer deleteRoomByRoomID(Integer roomID) {
+        return roomRepository.deleteByRoomID(roomID);
+    }
+
+    @Override
+    public Room modifyRoom(Room room) {
+        return roomRepository.save(room);
+    }
+
+    @Override
+    public Set<Room> allFuzzyMatching(String params) {
+        Set<Room> roomSet = new HashSet<>();
+        String[] paramArr = params.split(" ");
+        for(String param : paramArr) {
+            String paramStr = String.valueOf("%"+param+"%");
+            Integer paramInt;
+            try {
+                paramInt = Integer.valueOf(param);
+            } catch (NumberFormatException e) {
+                paramInt = -1;
+            }
+            Building building = new Building();
+            building.setBuildingID(paramInt);
+            List<Room> roomList = roomRepository.findByRoomIDOrCapacityOrCatalogueLikeOrLocationLikeOrNameLikeOrBuilding(paramInt, paramInt, paramStr, paramStr, paramStr, building);
+            roomSet.addAll(roomList);
+        }
+        return roomSet;
     }
 }

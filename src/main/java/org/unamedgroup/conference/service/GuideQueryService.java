@@ -76,4 +76,17 @@ public interface GuideQueryService {
      * @return 会议室时间块信息列表
      */
     List<RoomTime> roomTable(List<Room> roomList,String date);
+
+    /**
+     * 房间location信息转换
+     * @param room 房间信息
+     * @return 转换之后的房间信息
+     */
+    Room locationShift(Room room);
+
+    /**
+     * 去重查询所有会议室类别
+     * @return 会议室类别列表
+     */
+    List<String> getAllCatalogue();
 }
