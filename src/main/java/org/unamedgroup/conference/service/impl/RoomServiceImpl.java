@@ -40,6 +40,7 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     public List<Room> getRoomsByBuildingID(Integer buildingID) {
         List<Room> roomList = null;
         try {
+            // 根据楼宇ID得到楼宇，然后查询到该楼宇所有的房间
             Building building = buildingRepository.getBuildingByBuildingID(buildingID);
             roomList = roomRepository.getRoomsByBuilding(building);
             return roomList;
@@ -598,6 +599,7 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
 
     @Override
     public List<Room> roomByBuilding(Building building) {
+        // 根据楼宇返回房间
         return roomRepository.getRoomsByBuilding(building);
     }
 

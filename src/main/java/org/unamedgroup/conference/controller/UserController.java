@@ -1,6 +1,5 @@
 package org.unamedgroup.conference.controller;
 
-import com.auth0.jwt.JWT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
@@ -15,13 +14,10 @@ import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.entity.temp.UserInfo;
 import org.unamedgroup.conference.security.JWTUtil;
-import org.unamedgroup.conference.security.UnauthorizedException;
 import org.unamedgroup.conference.service.GeneralService;
 import org.unamedgroup.conference.service.MyConferenceService;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * UserController
@@ -283,4 +279,17 @@ public class UserController {
             return new FailureInfo(7005, "个人信息更新遇到未知错误。");
         }
     }
+
+    @ApiOperation(value = "获取所有的用户组")
+    @RequestMapping(value = "/userGroup", method = RequestMethod.GET)
+    @ResponseBody
+    public Object getUserGroup() {
+        try {
+            return new SuccessInfo(User.USERGROUP);
+        } catch (Exception e) {
+            return new FailureInfo(7006, "获取用户组失败。");
+        }
+
+    }
+
 }
