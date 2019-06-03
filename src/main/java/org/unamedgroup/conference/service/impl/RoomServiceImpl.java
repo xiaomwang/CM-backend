@@ -8,6 +8,7 @@ import org.unamedgroup.conference.dao.RoomRepository;
 import org.unamedgroup.conference.entity.Building;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
+import org.unamedgroup.conference.entity.temp.PageRoom;
 import org.unamedgroup.conference.entity.temp.RoomTime;
 import org.unamedgroup.conference.service.*;
 
@@ -625,7 +626,9 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     public Set<Room> allFuzzyMatching(String params) {
         Set<Room> roomSet = new HashSet<>();
         String[] paramArr = params.split(" ");
-        for(String param : paramArr) {
+        int length = Math.min(5, paramArr.length);
+        for(int i=0; i<length; i++) {
+            String param = paramArr[i];
             String paramStr = String.valueOf("%"+param+"%");
             Integer paramInt;
             try {
@@ -639,5 +642,10 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
             roomSet.addAll(roomList);
         }
         return roomSet;
+    }
+
+    @Override
+    public PageRoom pageRoomSet(Set<Room> roomSet, Integer pageCurrent, Integer pageSize) {
+        return null;
     }
 }

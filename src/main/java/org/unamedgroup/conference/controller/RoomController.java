@@ -235,6 +235,12 @@ public class RoomController {
 
     @PostMapping(value = "modify")
     public Object modify(Room room) {
+        if(room.getFlag()==null) {
+            room.setFlag(0);
+        }
+        if(room.getBuilding()==null) {
+            return new FailureInfo(6011, "无此楼宇！");
+        }
         try {
             Subject subject = SecurityUtils.getSubject();
             if(!subject.isAuthenticated()) {
