@@ -9,6 +9,7 @@ import org.unamedgroup.conference.entity.Building;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
 import org.unamedgroup.conference.entity.temp.PageRoom;
+import org.unamedgroup.conference.entity.temp.PageRoomTime;
 import org.unamedgroup.conference.entity.temp.RoomTime;
 import org.unamedgroup.conference.service.*;
 
@@ -596,6 +597,22 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     @Override
     public List<String> getAllCatalogue() {
         return roomRepository.findDistinctCatalogue();
+    }
+
+    @Override
+    public PageRoomTime pageRoomTimeList(List<RoomTime> roomTimeList, Integer pageCurrent, Integer pageSize) {
+        int start = (pageCurrent-1)*pageSize;
+        List<RoomTime> roomTimeListPage;
+        if(roomTimeList.isEmpty() || roomTimeList.size()<=start) {
+            roomTimeListPage = Collections.emptyList();
+        } else {
+            roomTimeListPage = new ArrayList<>();
+            int realSize = roomTimeList.size() - start > pageSize ? pageSize : roomTimeList.size() - start;
+            for(int i=0; i<realSize; i++) {
+                roomTimeListPage.add(roomTimeList.get(i+start));
+            }
+        }
+        return new PageRoomTime(roomTimeList.size(), roomTimeListPage);
     }
 
     @Override

@@ -10,10 +10,7 @@ import org.unamedgroup.conference.dao.RoomRepository;
 import org.unamedgroup.conference.entity.Building;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
-import org.unamedgroup.conference.entity.temp.FailureInfo;
-import org.unamedgroup.conference.entity.temp.PageRoom;
-import org.unamedgroup.conference.entity.temp.RoomTime;
-import org.unamedgroup.conference.entity.temp.SuccessInfo;
+import org.unamedgroup.conference.entity.temp.*;
 import org.unamedgroup.conference.service.GuideQueryService;
 import org.unamedgroup.conference.service.QuickCheckService;
 import org.unamedgroup.conference.service.RelevanceQueryService;
@@ -181,6 +178,22 @@ public class RoomController {
         List<RoomTime> roomTimeList = guideQueryService.roomTable(roomList, date);
         if(roomTimeList!=null) {
             return new SuccessInfo(roomTimeList);
+        } else {
+            return new FailureInfo(6001, "处理房间填充失败!");
+        }
+    }
+
+    @GetMapping(value = "guide/page")
+    public Object guidePage(Integer pageCurrent, Integer pageSize, Date start, Date end, Room room, Building building) {
+        room.setBuilding(building);
+        List<Room> roomList = guideQueryService.screenRoomList(room);
+        roomList = guideQueryService.sortRoomByFreeIndex(roomList, start, end);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = simpleDateFormat.format(start);
+        List<RoomTime> roomTimeList = guideQueryService.roomTable(roomList, date);
+        PageRoomTime pageRoomTime = guideQueryService.pageRoomTimeList(roomTimeList, pageCurrent, pageSize);
+        if(pageRoomTime!=null) {
+            return new SuccessInfo(pageRoomTime);
         } else {
             return new FailureInfo(6001, "处理房间填充失败!");
         }
