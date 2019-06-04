@@ -173,7 +173,7 @@ public class RoomController {
     @GetMapping(value = "guide")
     public Object guide(Date start, Date end, Room room, Building building) {
         room.setBuilding(building);
-        room = guideQueryService.locationShift(room);
+//        room = guideQueryService.locationShift(room);
         List<Room> roomList = guideQueryService.screenRoomList(room);
         roomList = guideQueryService.sortRoomByFreeIndex(roomList, start, end);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
