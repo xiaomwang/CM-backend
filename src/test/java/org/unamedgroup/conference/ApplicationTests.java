@@ -8,8 +8,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.unamedgroup.conference.dao.ConferenceRepository;
 import org.unamedgroup.conference.dao.ParticipantsRepository;
 
+import org.unamedgroup.conference.dao.UserRepository;
+import org.unamedgroup.conference.entity.User;
 import org.unamedgroup.conference.feature.service.IDetectFaceService;
 import org.unamedgroup.conference.service.GeneralService;
+import org.unamedgroup.conference.service.impl.Message;
 
 
 import java.io.FileNotFoundException;
@@ -42,17 +45,16 @@ public class ApplicationTests {
 //        System.out.println(result);
     }
     @Autowired
-
     UserRepository userRepository;
-    @Autowired
-    Message message;
+//    @Autowired
+//    Message message;
     @Test
     public void test() {
 //        System.out.println(userRepository.countUsers());
 //        System.out.println(userRepository.findUsersByPage(1));
         List<User> list = userRepository.findUsersByRealNameLike("周韬");
         User user = list.get(0);
-        message.attendance("打死周韬","12:00","打死周韬房间");
+//        message.attendance("打死周韬","12:00","打死周韬房间");
 
     }
 
