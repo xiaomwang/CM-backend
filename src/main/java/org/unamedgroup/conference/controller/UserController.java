@@ -183,7 +183,7 @@ public class UserController {
                 return new FailureInfo(7104, "手机号码格式不正确");
             }
 
-            User newUser = new User(User.getPasswordHash(password), realName, department, email, phoneNumber, userGroup, null);
+            User newUser = new User(password, realName, department, email, phoneNumber, userGroup, null);
             userRepository.save(newUser);
 
             return new SuccessInfo(newUser.getUserID());
