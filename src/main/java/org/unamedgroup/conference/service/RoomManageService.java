@@ -1,6 +1,7 @@
 package org.unamedgroup.conference.service;
 
 import org.unamedgroup.conference.entity.Room;
+import org.unamedgroup.conference.entity.temp.PageRoom;
 
 import java.util.List;
 import java.util.Set;
@@ -44,4 +45,13 @@ public interface RoomManageService {
      * @return 房间信息集合
      */
     Set<Room> allFuzzyMatching(String params);
+
+    /**
+     * 将会议室集合分页处理
+     * @param roomSet 会议室集合（整）
+     * @param pageCurrent 当前页
+     * @param pageSize 页大小
+     * @return 会议室集合（分页）
+     */
+    PageRoom pageRoomSet(Set<Room> roomSet, Integer pageCurrent, Integer pageSize);
 }

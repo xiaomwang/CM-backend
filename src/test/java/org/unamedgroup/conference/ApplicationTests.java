@@ -44,19 +44,20 @@ public class ApplicationTests {
 //        double result = detectFaceService.compareFace(file,1);
 //        System.out.println(result);
     }
-    @Autowired
-    UserRepository userRepository;
+
+
+//    UserRepository userRepository;
 //    @Autowired
 //    Message message;
-    @Test
-    public void test() {
-//        System.out.println(userRepository.countUsers());
-//        System.out.println(userRepository.findUsersByPage(1));
-        List<User> list = userRepository.findUsersByRealNameLike("周韬");
-        User user = list.get(0);
+//    @Test
+//    public void test() {
+////        System.out.println(userRepository.countUsers());
+////        System.out.println(userRepository.findUsersByPage(1));
+//        List<User> list = userRepository.findUsersByRealNameLike("周韬");
+//        User user = list.get(0);
 //        message.attendance("打死周韬","12:00","打死周韬房间");
-
-    }
+//
+//    }
 
 
 }
