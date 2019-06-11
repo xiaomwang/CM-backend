@@ -160,7 +160,17 @@ public class UserAdminController {
             return new FailureInfo(8007, "用户基本信息更新遇到错误，请检查。");
         }
 
+    }
 
+    @ApiOperation(value = "获取所有的用户组")
+    @RequestMapping(value = "/userGroup", method = RequestMethod.GET)
+    @ResponseBody
+    public Object getUserGroup() {
+        try {
+            return new SuccessInfo(User.USERGROUP);
+        } catch (Exception e) {
+            return new FailureInfo(7006, "获取用户组失败。");
+        }
 
     }
 
