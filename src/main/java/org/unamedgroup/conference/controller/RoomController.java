@@ -10,9 +10,7 @@ import org.unamedgroup.conference.dao.RoomRepository;
 import org.unamedgroup.conference.entity.Building;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
-import org.unamedgroup.conference.entity.temp.FailureInfo;
-import org.unamedgroup.conference.entity.temp.RoomTime;
-import org.unamedgroup.conference.entity.temp.SuccessInfo;
+import org.unamedgroup.conference.entity.temp.*;
 import org.unamedgroup.conference.service.GuideQueryService;
 import org.unamedgroup.conference.service.QuickCheckService;
 import org.unamedgroup.conference.service.RelevanceQueryService;
@@ -172,7 +170,7 @@ public class RoomController {
     @GetMapping(value = "guide")
     public Object guide(Date start, Date end, Room room, Building building) {
         room.setBuilding(building);
-        room = guideQueryService.locationShift(room);
+//        room = guideQueryService.locationShift(room);
         List<Room> roomList = guideQueryService.screenRoomList(room);
         roomList = guideQueryService.sortRoomByFreeIndex(roomList, start, end);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -180,6 +178,22 @@ public class RoomController {
         List<RoomTime> roomTimeList = guideQueryService.roomTable(roomList, date);
         if(roomTimeList!=null) {
             return new SuccessInfo(roomTimeList);
+        } else {
+            return new FailureInfo(6001, "处理房间填充失败!");
+        }
+    }
+
+    @GetMapping(value = "guide/page")
+    public Object guidePage(Integer pageCurrent, Integer pageSize, Date start, Date end, Room room, Building building) {
+        room.setBuilding(building);
+        List<Room> roomList = guideQueryService.screenRoomList(room);
+        roomList = guideQueryService.sortRoomByFreeIndex(roomList, start, end);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = simpleDateFormat.format(start);
+        List<RoomTime> roomTimeList = guideQueryService.roomTable(roomList, date);
+        PageRoomTime pageRoomTime = guideQueryService.pageRoomTimeList(roomTimeList, pageCurrent, pageSize);
+        if(pageRoomTime!=null) {
+            return new SuccessInfo(pageRoomTime);
         } else {
             return new FailureInfo(6001, "处理房间填充失败!");
         }
@@ -235,6 +249,12 @@ public class RoomController {
 
     @PostMapping(value = "modify")
     public Object modify(Room room) {
+        if(room.getFlag()==null) {
+            room.setFlag(0);
+        }
+        if(room.getBuilding()==null) {
+            return new FailureInfo(6011, "无此楼宇！");
+        }
         try {
             Subject subject = SecurityUtils.getSubject();
             if(!subject.isAuthenticated()) {
@@ -253,6 +273,18 @@ public class RoomController {
         try {
             Set<Room> roomSet = roomManageService.allFuzzyMatching(params);
             return new SuccessInfo(roomSet);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new FailureInfo(6010, "模糊匹配异常！");
+        }
+    }
+
+    @GetMapping(value = "match/page")
+    public Object matchPage(String params, Integer pageCurrent, Integer pageSize) {
+        try {
+            Set<Room> roomSet = roomManageService.allFuzzyMatching(params);
+            PageRoom roomSetPage = roomManageService.pageRoomSet(roomSet, pageCurrent, pageSize);
+            return new SuccessInfo(roomSetPage);
         } catch (Exception e) {
             e.printStackTrace();
             return new FailureInfo(6010, "模糊匹配异常！");

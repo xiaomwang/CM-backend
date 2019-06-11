@@ -8,6 +8,8 @@ import org.unamedgroup.conference.dao.RoomRepository;
 import org.unamedgroup.conference.entity.Building;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
+import org.unamedgroup.conference.entity.temp.PageRoom;
+import org.unamedgroup.conference.entity.temp.PageRoomTime;
 import org.unamedgroup.conference.entity.temp.RoomTime;
 import org.unamedgroup.conference.service.*;
 
@@ -598,6 +600,22 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     }
 
     @Override
+    public PageRoomTime pageRoomTimeList(List<RoomTime> roomTimeList, Integer pageCurrent, Integer pageSize) {
+        int start = (pageCurrent-1)*pageSize;
+        List<RoomTime> roomTimeListPage;
+        if(roomTimeList.isEmpty() || roomTimeList.size()<=start) {
+            roomTimeListPage = Collections.emptyList();
+        } else {
+            roomTimeListPage = new ArrayList<>();
+            int realSize = roomTimeList.size() - start > pageSize ? pageSize : roomTimeList.size() - start;
+            for(int i=0; i<realSize; i++) {
+                roomTimeListPage.add(roomTimeList.get(i+start));
+            }
+        }
+        return new PageRoomTime(roomTimeList.size(), roomTimeListPage);
+    }
+
+    @Override
     public List<Room> roomByBuilding(Building building) {
         // 根据楼宇返回房间
         return roomRepository.getRoomsByBuilding(building);
@@ -627,7 +645,9 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     public Set<Room> allFuzzyMatching(String params) {
         Set<Room> roomSet = new HashSet<>();
         String[] paramArr = params.split(" ");
-        for(String param : paramArr) {
+        int length = Math.min(5, paramArr.length);
+        for(int i=0; i<length; i++) {
+            String param = paramArr[i];
             String paramStr = String.valueOf("%"+param+"%");
             Integer paramInt;
             try {
@@ -641,5 +661,22 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
             roomSet.addAll(roomList);
         }
         return roomSet;
+    }
+
+    @Override
+    public PageRoom pageRoomSet(Set<Room> roomSet, Integer pageCurrent, Integer pageSize) {
+        List<Room> tempList = new ArrayList<>(roomSet);
+        int start = (pageCurrent-1)*pageSize;
+        Set<Room> roomSetPage;
+        if(roomSet.isEmpty() || roomSet.size()<=start) {
+            roomSetPage = Collections.emptySet();
+        } else {
+            roomSetPage = new HashSet<>();
+            int realSize = roomSet.size() - start > pageSize ? pageSize : roomSet.size() - start;
+            for(int i=0; i<realSize; i++) {
+                roomSetPage.add(tempList.get(i+start));
+            }
+        }
+        return new PageRoom(roomSet.size(), roomSetPage);
     }
 }
