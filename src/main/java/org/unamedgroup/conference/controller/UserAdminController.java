@@ -168,9 +168,42 @@ public class UserAdminController {
         try {
             return new SuccessInfo(User.USERGROUP);
         } catch (Exception e) {
-            return new FailureInfo(7006, "获取用户组失败。");
+            return new FailureInfo(8008, "获取用户组失败。");
         }
 
     }
+
+
+    @ApiOperation(value = "修改密码")
+    @RequestMapping(value = "/password", method = RequestMethod.POST)
+    @ResponseBody
+    public Object changePassword(Integer userID, String newPassword) {
+        //登录有效性验证
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        } else if (generalService.isAdmin() == false) {
+            return new FailureInfo(-7);
+        }
+
+        // 通过是否是32位简单验证是否是MD5加密之后的结果
+        if (newPassword.length() != 32) {
+            return new FailureInfo(8009, "密码格式不正确。");
+        }
+
+        try {
+            // 获取当前登录用户
+            User user = userRepository.getUserByUserID(userID);
+            // 通过检验的话新密码加入数据库
+            user.setPassword(User.getPasswordHash(newPassword));
+            userRepository.save(user);
+            return new SuccessInfo("密码修改成功！");
+        } catch (Exception e) {
+            System.err.println("密码修改失败！");
+            System.err.println(e.toString());
+            return new FailureInfo(8010, "密码修改遇到未知错误。");
+        }
+    }
+
 
 }
