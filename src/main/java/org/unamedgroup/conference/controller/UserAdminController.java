@@ -14,7 +14,6 @@ import org.unamedgroup.conference.entity.temp.UserInfo;
 import org.unamedgroup.conference.service.GeneralService;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -45,7 +44,7 @@ public class UserAdminController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
-        } else if (generalService.checkUserGroup() == false) {
+        } else if (generalService.isAdmin() == false) {
             return new FailureInfo(-7);
         }
 
@@ -74,7 +73,7 @@ public class UserAdminController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
-        } else if (generalService.checkUserGroup() == false) {
+        } else if (generalService.isAdmin() == false) {
             return new FailureInfo(-7);
         }
 
@@ -103,7 +102,7 @@ public class UserAdminController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
-        } else if (generalService.checkUserGroup() == false) {
+        } else if (generalService.isAdmin() == false) {
             return new FailureInfo(-7);
         }
 
@@ -146,7 +145,7 @@ public class UserAdminController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
-        } else if (generalService.checkUserGroup() == false) {
+        } else if (generalService.isAdmin() == false) {
             return new FailureInfo(-7);
         }
 
