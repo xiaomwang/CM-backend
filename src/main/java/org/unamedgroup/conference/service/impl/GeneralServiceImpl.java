@@ -134,11 +134,11 @@ public class GeneralServiceImpl implements GeneralService {
     }
 
     @Override
-    public Boolean checkUserGroup() {
+    public Boolean isAdmin() {
         try {
             User user = getLoginUser();
 
-            if (user.getUserGroup() != 0) {
+            if (user.getUserGroup() == 0) {
                 return true;
             } else {
                 return false;

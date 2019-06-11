@@ -139,7 +139,7 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
      * @return 会议列表
      */
     @Modifying
-    @Query(value = "select * from conference c where (c.user = ?1 or c.participant_sequence in (?2)) order by c.start_time ASC limit ?3,?4", nativeQuery = true)
+    @Query(value = "select * from conference c where (c.user = ?1 or c.participant_sequence in (?2)) order by c.start_time DESC limit ?3,?4", nativeQuery = true)
     List<Conference> findMyConference(Integer user, List<Integer> participantSequence, Integer pageNumber, Integer pageSize);
 
     @Transactional
