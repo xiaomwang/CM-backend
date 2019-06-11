@@ -183,7 +183,7 @@ public class UserController {
                 return new FailureInfo(7104, "手机号码格式不正确");
             }
 
-            User newUser = new User(User.getPasswordHash(password), realName, department, email, phoneNumber, userGroup, null);
+            User newUser = new User(password, realName, department, email, phoneNumber, userGroup, null);
             userRepository.save(newUser);
 
             return new SuccessInfo(newUser.getUserID());
@@ -280,12 +280,18 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "获取所有的用户组")
+    @ApiOperation(value = "获取当前用户的用户组")
     @RequestMapping(value = "/userGroup", method = RequestMethod.GET)
     @ResponseBody
     public Object getUserGroup() {
         try {
-            return new SuccessInfo(User.USERGROUP);
+            // 登录有效性验证
+            Subject subject = SecurityUtils.getSubject();
+            if (subject.isAuthenticated() == false) {
+                return new FailureInfo();
+            }
+            User user = generalService.getLoginUser();
+            return new SuccessInfo(user.getUserGroup());
         } catch (Exception e) {
             return new FailureInfo(7006, "获取用户组失败。");
         }

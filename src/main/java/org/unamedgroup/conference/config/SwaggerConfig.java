@@ -31,7 +31,7 @@ public class SwaggerConfig {
         return new ApiInfoBuilder()
                 .title("会议室管理系统")
                 .description("这是会议室管理系统接口文档 v 1.0.0")
-                .termsOfServiceUrl("http://47.103.6.243")
+                .termsOfServiceUrl("http://localhost")
                 .version("1.0.0")
                 .build();
     }

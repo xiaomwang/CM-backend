@@ -140,16 +140,21 @@ public class ConferenceController {
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
         }
-
+        // 会议取消处理流程
         try {
+            // 根据会议ID检索到相关会议
             Conference conference = conferenceRepository.getConferenceByConferenceID(conferenceID);
+            // 将会议状态标记为取消
             conference.setStatus(-1);  //-1表示会议被取消
+            // 写回数据库
             conferenceRepository.save(conference);
 
             //短信提醒处理
             try {
+                // 获取当前日期和时间
                 Calendar now = Calendar.getInstance();
                 now.setTime(conference.getStartTime());
+                // 年月日和时间的分割
                 String year = String.valueOf(now.get(Calendar.YEAR));
                 String month = String.valueOf(now.get(Calendar.MONTH) + 1);
                 String day = String.valueOf(now.get(Calendar.DAY_OF_MONTH));
@@ -174,11 +179,15 @@ public class ConferenceController {
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
         }
-
+        // 会议驳回处理流程
         try {
+            // 根据会议ID检索到相关会议
             Conference conference = conferenceRepository.getConferenceByConferenceID(conferenceID);
+            // 将会议状态标记为取消
             conference.setStatus(0);  //0表示会议被驳回
+            // 写回数据库
             conferenceRepository.save(conference);
+
             return new SuccessInfo("会议驳回成功！");
         } catch (Exception e) {
             System.err.println("会议驳回出错！");
