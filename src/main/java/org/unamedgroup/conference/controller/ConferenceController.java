@@ -14,10 +14,7 @@ import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.security.JWTUtil;
-import org.unamedgroup.conference.service.GeneralService;
-import org.unamedgroup.conference.service.ManagingAttendeesService;
-import org.unamedgroup.conference.service.MyConferenceService;
-import org.unamedgroup.conference.service.Message;
+import org.unamedgroup.conference.service.*;
 
 import java.util.Calendar;
 import java.util.List;
@@ -47,6 +44,8 @@ public class ConferenceController {
     ManagingAttendeesService managingAttendeesService;
     @Autowired
     Message message;
+    @Autowired
+    ConferenceManageService conferenceManageService;
 
     /**
      * 预定会议
@@ -112,6 +111,34 @@ public class ConferenceController {
             return new FailureInfo(3101, "个人会议信息详情拉取失败");
         } else {
             return new SuccessInfo(conferenceList);
+        }
+    }
+
+    @GetMapping(value = "/list/page")
+    public Object getListPage(Integer pageCurrent, Integer pageSize) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+        List<Conference> conferenceList = conferenceManageService.getPageConferenceList(pageCurrent, pageSize);
+        if (conferenceList == null) {
+            return new FailureInfo(3103, "所有会议信息详情拉取失败");
+        } else {
+            return new SuccessInfo(conferenceList);
+        }
+    }
+
+    @GetMapping(value = "/page/total")
+    public Object getPageTotal() {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+        Integer total = conferenceManageService.getPageConferenceTotal();
+        if (total == null) {
+            return new FailureInfo(3102, "会议信息总数拉取失败");
+        } else {
+            return new SuccessInfo(total);
         }
     }
 
