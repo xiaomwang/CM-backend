@@ -7,6 +7,7 @@ package org.unamedgroup.conference.dao;
         import org.springframework.transaction.annotation.Transactional;
         import org.unamedgroup.conference.entity.Conference;
         import org.unamedgroup.conference.entity.Room;
+        import org.unamedgroup.conference.entity.temp.CountResult;
 
         import java.util.Date;
         import java.util.List;
@@ -180,4 +181,25 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
     @Modifying
     @Query(value = "select * from conference c where c.room = ?1 and c.status = ?2 and c.end_time >= (?3) and c.start_time <= (?4) ", nativeQuery = true)
     List<Conference> findByRoomAndStatusAndDate(Room id, Integer status, Date nowTime, Date afterHalfHour);
+
+    /**
+     * 查询用户申请通过会议的数量
+     * @return 列表
+     */
+    @Query(value = "select user, count(*) as count from conference c where c.status = 1 group by c.user ", nativeQuery = true)
+    List<CountResult> countPass();
+
+    /**
+     * 查询用户被驳回会议的数量
+     * @return 列表
+     */
+    @Query(value = "select user, count(*) as count from conference c where c.status = 0 group by c.user", nativeQuery = true)
+    List<CountResult> countReject();
+
+    /**
+     * 查询用户被取消会议的数量
+     * @return 列表
+     */
+    @Query(value = "select user, count(*) as count from conference c where c.status = -1 group by c.user", nativeQuery = true)
+    List<CountResult> countCancel();
 }

@@ -5,6 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.unamedgroup.conference.entity.Participants;
+import org.unamedgroup.conference.entity.temp.CountResult;
 
 import java.util.List;
 
@@ -47,4 +48,11 @@ public interface ParticipantsRepository extends CrudRepository<Participants, Int
      * @return 与会人信息列表
      */
     List<Participants> findBySequenceID(Integer conferenceID);
+
+    /**
+     * 查询用户参与会议的数量
+     * @return 列表
+     */
+    @Query(value = "select userid as user, count(*) as count from participant p group by p.userid;", nativeQuery = true)
+    List<CountResult> countPart();
 }
