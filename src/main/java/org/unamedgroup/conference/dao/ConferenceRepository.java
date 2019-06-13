@@ -202,4 +202,21 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
      */
     @Query(value = "select user, count(*) as count from conference c where c.status = -1 group by c.user", nativeQuery = true)
     List<CountResult> countCancel();
+
+    /**
+     * 特定用户申请会议数量
+     * @param user 用户id
+     * @return 特定用户申请会议数量
+     */
+    @Query(value = "select count(*) as value from conference c where c.user = ?1", nativeQuery = true)
+    Integer countApplyOne(Integer user);
+
+    /**
+     * 特定用户特定会议会议状态数量
+     * @param user 用户id
+     * @param status 是否通过（1通过 0驳回 -1取消）
+     * @return 特定用户特定会议会议状态数量
+     */
+    @Query(value = "select count(*) as value from conference c where c.user = ?1 and c.status = ?2", nativeQuery = true)
+    Integer countPassWhether(Integer user, Integer status);
 }

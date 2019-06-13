@@ -6,8 +6,10 @@ import org.unamedgroup.conference.dao.ConferenceRepository;
 import org.unamedgroup.conference.dao.ParticipantsRepository;
 import org.unamedgroup.conference.dao.UserRepository;
 import org.unamedgroup.conference.entity.User;
+import org.unamedgroup.conference.entity.temp.CountMap;
 import org.unamedgroup.conference.entity.temp.CountResult;
 import org.unamedgroup.conference.entity.temp.UserConferenceCase;
+import org.unamedgroup.conference.entity.temp.UserConferenceOne;
 import org.unamedgroup.conference.service.FormService;
 
 import java.util.ArrayList;
@@ -72,5 +74,17 @@ public class FormServiceImpl implements FormService {
         userConferenceCase.setRejectList(rejects);
         userConferenceCase.setCancelList(cancels);
         return userConferenceCase;
+    }
+
+    @Override
+    public UserConferenceOne userConferenceOne(Integer user) {
+        UserConferenceOne userConferenceOne = new UserConferenceOne();
+        userConferenceOne.setApply(new CountMap(conferenceRepository.countApplyOne(user), "申请"));
+        userConferenceOne.setPass(new CountMap(conferenceRepository.countPassWhether(user, 1), "通过"));
+        userConferenceOne.setReject(new CountMap(conferenceRepository.countPassWhether(user, 0), "驳回"));
+        userConferenceOne.setCancel(new CountMap(conferenceRepository.countPassWhether(user, -1), "取消"));
+        userConferenceOne.setPart(new CountMap(participantsRepository.countPartOne(user), "参与"));
+
+        return userConferenceOne;
     }
 }

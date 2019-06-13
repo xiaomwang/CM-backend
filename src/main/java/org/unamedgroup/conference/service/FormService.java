@@ -1,6 +1,7 @@
 package org.unamedgroup.conference.service;
 
 import org.unamedgroup.conference.entity.temp.UserConferenceCase;
+import org.unamedgroup.conference.entity.temp.UserConferenceOne;
 
 /**
  * @Author: 白振宇
@@ -8,4 +9,5 @@ import org.unamedgroup.conference.entity.temp.UserConferenceCase;
  */
 public interface FormService {
     UserConferenceCase userConferenceCase();
+    UserConferenceOne userConferenceOne(Integer user);
 }
