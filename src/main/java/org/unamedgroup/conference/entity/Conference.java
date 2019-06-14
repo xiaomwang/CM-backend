@@ -22,7 +22,7 @@ public class Conference implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer conferenceID;
     private String subject;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "room", referencedColumnName = "roomid")
     private Room room;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
