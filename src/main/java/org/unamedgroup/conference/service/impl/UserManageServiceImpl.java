@@ -46,7 +46,9 @@ public class UserManageServiceImpl implements UserManageService {
     @Override
     public Integer register(String password, String realName, String department, String email, String phoneNumber, Integer userGroup) {
         try {
+            // 初始化注册时候建立一个没有人脸特征的对象
             User newUser = new User(password, realName, department, email, phoneNumber, userGroup, null);
+            // 取得该用户的用户ID并返回
             Integer userID = newUser.userID;
             return userID;
         } catch (Exception e) {

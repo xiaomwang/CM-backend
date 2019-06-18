@@ -52,7 +52,9 @@ public class BuildingController {
     @ResponseBody
     public Object getBuildingObject(Integer buildingID) {
         try {
+            // 根据楼宇ID在数据库中查询对应的building
             Building building = buildingRepository.getBuildingByBuildingID(buildingID);
+            // 找不到直接扔空指针异常，交异常处理程序处理
             if (building != null) {
                 return new SuccessInfo(building);
             } else {

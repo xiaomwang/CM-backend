@@ -4,8 +4,11 @@ import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.IOUtils;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.tensorflow.Graph;
 
@@ -43,14 +46,18 @@ public class FaceNet {
      */
     private boolean loadModel(){
         try{
+            Resource resource = new ClassPathResource("models/FaceCompare.pb");
+            InputStream is =resource.getInputStream();
             Graph graph = new Graph();
-            byte[] graphBytes = IOUtils.toByteArray(new FileInputStream(MODEL_FILE ));
+//            byte[] graphBytes = IOUtils.toByteArray(new FileInputStream(MODEL_FILE ));
+            byte[] graphBytes = IOUtils.toByteArray(is);
             graph.importGraphDef(graphBytes);
             this.session = new Session(graph);
             System.out.println("创建图成功");
             return true;
         }
         catch (Exception e){
+            e.printStackTrace();
             System.err.println("创建图失败");
             return false;
         }

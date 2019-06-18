@@ -40,6 +40,7 @@ public class GeneralServiceImpl implements GeneralService {
     public String getRoomNameByID(Integer roomID) {
         String name = null;
         try {
+            // 根据房间ID查询得到房间实体，然后返回其名
             Room room = roomRepository.getRoomByRoomID(roomID);
             name = room.getName();
             return name;
@@ -54,6 +55,7 @@ public class GeneralServiceImpl implements GeneralService {
     public List<Conference> getConferencesByDate(Date start, Date end) {
         try {
             // 当前会议时间是否有会，如果无会议，继续
+            // 针对四种情况进行处理
             List<Conference> conferenceList1 = conferenceRepository.findConferencesByStartTimeLessThanEqualAndEndTimeGreaterThanEqual(start, start);
             List<Conference> conferenceList2 = conferenceRepository.findConferencesByStartTimeLessThanEqualAndEndTimeGreaterThanEqual(end, end);
             List<Conference> conferenceList3 = conferenceRepository.findConferencesByStartTimeLessThanEqualAndEndTimeGreaterThanEqual(start, end);
@@ -132,11 +134,11 @@ public class GeneralServiceImpl implements GeneralService {
     }
 
     @Override
-    public Boolean checkUserGroup() {
+    public Boolean isAdmin() {
         try {
             User user = getLoginUser();
 
-            if (user.getUserGroup() != 0) {
+            if (user.getUserGroup() == 0) {
                 return true;
             } else {
                 return false;

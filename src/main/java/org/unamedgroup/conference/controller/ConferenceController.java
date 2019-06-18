@@ -14,10 +14,7 @@ import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.temp.FailureInfo;
 import org.unamedgroup.conference.entity.temp.SuccessInfo;
 import org.unamedgroup.conference.security.JWTUtil;
-import org.unamedgroup.conference.service.GeneralService;
-import org.unamedgroup.conference.service.ManagingAttendeesService;
-import org.unamedgroup.conference.service.MyConferenceService;
-import org.unamedgroup.conference.service.Message;
+import org.unamedgroup.conference.service.*;
 
 import java.util.Calendar;
 import java.util.List;
@@ -47,6 +44,8 @@ public class ConferenceController {
     ManagingAttendeesService managingAttendeesService;
     @Autowired
     Message message;
+    @Autowired
+    ConferenceManageService conferenceManageService;
 
     /**
      * 预定会议
@@ -83,8 +82,12 @@ public class ConferenceController {
                 if (conferenceList1.size() != 0) {
                     // 如果当前时间段有回忆则检查这些会议是否都被驳回，如果有未被驳回的无法约定
                     for (int i = 0; i < conferenceList1.size(); i++) {
+                        // 判断状态是否为正常会议
                         if (conferenceList1.get(i).getStatus() == 1) {
-                            return new FailureInfo(3001, "当前时段有会，无法预订！");
+                            // 判断有会的是否是当前房间
+                            if (conferenceList1.get(i).getRoom().equals(conference.getRoom())) {
+                                return new FailureInfo(3001, "当前时段有会，无法预订！");
+                            }
                         }
                     }
                 }
@@ -115,6 +118,34 @@ public class ConferenceController {
         }
     }
 
+    @GetMapping(value = "/list/page")
+    public Object getListPage(Integer pageCurrent, Integer pageSize) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+        List<Conference> conferenceList = conferenceManageService.getPageConferenceList(pageCurrent, pageSize);
+        if (conferenceList == null) {
+            return new FailureInfo(3103, "所有会议信息详情拉取失败");
+        } else {
+            return new SuccessInfo(conferenceList);
+        }
+    }
+
+    @GetMapping(value = "/page/total")
+    public Object getPageTotal() {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        }
+        Integer total = conferenceManageService.getPageConferenceTotal();
+        if (total == null) {
+            return new FailureInfo(3102, "会议信息总数拉取失败");
+        } else {
+            return new SuccessInfo(total);
+        }
+    }
+
     @ApiOperation(value = "我的会议信息总条数api")
     @GetMapping(value = "/total")
     public Object getTotal() {
@@ -140,16 +171,21 @@ public class ConferenceController {
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
         }
-
+        // 会议取消处理流程
         try {
+            // 根据会议ID检索到相关会议
             Conference conference = conferenceRepository.getConferenceByConferenceID(conferenceID);
+            // 将会议状态标记为取消
             conference.setStatus(-1);  //-1表示会议被取消
+            // 写回数据库
             conferenceRepository.save(conference);
 
             //短信提醒处理
             try {
+                // 获取当前日期和时间
                 Calendar now = Calendar.getInstance();
                 now.setTime(conference.getStartTime());
+                // 年月日和时间的分割
                 String year = String.valueOf(now.get(Calendar.YEAR));
                 String month = String.valueOf(now.get(Calendar.MONTH) + 1);
                 String day = String.valueOf(now.get(Calendar.DAY_OF_MONTH));
@@ -174,11 +210,15 @@ public class ConferenceController {
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
         }
-
+        // 会议驳回处理流程
         try {
+            // 根据会议ID检索到相关会议
             Conference conference = conferenceRepository.getConferenceByConferenceID(conferenceID);
+            // 将会议状态标记为取消
             conference.setStatus(0);  //0表示会议被驳回
+            // 写回数据库
             conferenceRepository.save(conference);
+
             return new SuccessInfo("会议驳回成功！");
         } catch (Exception e) {
             System.err.println("会议驳回出错！");

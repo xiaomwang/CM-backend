@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.unamedgroup.conference.entity.Building;
 import org.unamedgroup.conference.entity.Room;
 import org.unamedgroup.conference.service.GuideQueryService;
+import org.unamedgroup.conference.service.RoomManageService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,6 +27,8 @@ public class RoomServiceImplTest {
 
     @Autowired
     GuideQueryService guideQueryService;
+    @Autowired
+    RoomManageService roomManageService;
 
     @Test
     public void screenRoomList() throws ParseException {
@@ -42,5 +45,11 @@ public class RoomServiceImplTest {
         room.setCatalogue("-1");
         List<Room> roomList = guideQueryService.screenRoomList(room);
         System.out.println(guideQueryService.sortRoomByFreeIndex(roomList, start, end));
+    }
+
+    @Test
+    public void testPageRoomInfo() {
+        System.out.println(roomManageService.getPageRoomInfo(2, 2));
+        System.out.println(roomManageService.totalPageRomInfo());
     }
 }

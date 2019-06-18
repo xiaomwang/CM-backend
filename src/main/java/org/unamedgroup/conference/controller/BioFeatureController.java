@@ -67,7 +67,7 @@ public class BioFeatureController {
 
         try {
             InputStream inputStream = Utils.base64InputStream(imgStr);
-            int result = detectFaceService.detectFeature(inputStream, 3);
+            int result = detectFaceService.detectFeature(inputStream, userID);
             if (inputStream != null) {
                 inputStream.close();
 //                return new FailureInfo(4003, "输入数据出错" );

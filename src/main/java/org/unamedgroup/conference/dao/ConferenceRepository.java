@@ -7,6 +7,7 @@ package org.unamedgroup.conference.dao;
         import org.springframework.transaction.annotation.Transactional;
         import org.unamedgroup.conference.entity.Conference;
         import org.unamedgroup.conference.entity.Room;
+        import org.unamedgroup.conference.entity.temp.CountResult;
 
         import java.util.Date;
         import java.util.List;
@@ -132,7 +133,6 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
     /**
      * 按照升序查询与用户相关的所有会议
      *
-     * @param status              会议状态
      * @param user                用户id
      * @param participantSequence 与会人序列
      * @param pageNumber          起始索引
@@ -140,12 +140,20 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
      * @return 会议列表
      */
     @Modifying
-    @Query(value = "select * from conference c where (c.user = ?1 or c.participant_sequence in (?2)) order by c.start_time ASC limit ?3,?4", nativeQuery = true)
+    @Query(value = "select * from conference c where (c.user = ?1 or c.participant_sequence in (?2)) order by c.start_time DESC limit ?3,?4", nativeQuery = true)
     List<Conference> findMyConference(Integer user, List<Integer> participantSequence, Integer pageNumber, Integer pageSize);
+
+    @Modifying
+    @Query(value = "select * from conference c order by c.start_time DESC limit ?1,?2", nativeQuery = true)
+    List<Conference> findPageConference(Integer pageNumber, Integer pageSize);
 
     @Transactional
     @Query(value = "select count(*) from conference c where (c.user = ?1 or c.participant_sequence in (?2))", nativeQuery = true)
     Integer countMyConference(Integer user, List<Integer> participantSequence);
+
+    @Transactional
+    @Query(value = "select count(*) from conference c", nativeQuery = true)
+    Integer countPageConference();
 
 
     /**
@@ -173,4 +181,42 @@ public interface ConferenceRepository extends CrudRepository<Conference, Integer
     @Modifying
     @Query(value = "select * from conference c where c.room = ?1 and c.status = ?2 and c.end_time >= (?3) and c.start_time <= (?4) ", nativeQuery = true)
     List<Conference> findByRoomAndStatusAndDate(Room id, Integer status, Date nowTime, Date afterHalfHour);
+
+    /**
+     * 查询用户申请通过会议的数量
+     * @return 列表
+     */
+    @Query(value = "select user, count(*) as count from conference c where c.status = 1 group by c.user ", nativeQuery = true)
+    List<CountResult> countPass();
+
+    /**
+     * 查询用户被驳回会议的数量
+     * @return 列表
+     */
+    @Query(value = "select user, count(*) as count from conference c where c.status = 0 group by c.user", nativeQuery = true)
+    List<CountResult> countReject();
+
+    /**
+     * 查询用户被取消会议的数量
+     * @return 列表
+     */
+    @Query(value = "select user, count(*) as count from conference c where c.status = -1 group by c.user", nativeQuery = true)
+    List<CountResult> countCancel();
+
+    /**
+     * 特定用户申请会议数量
+     * @param user 用户id
+     * @return 特定用户申请会议数量
+     */
+    @Query(value = "select count(*) as value from conference c where c.user = ?1", nativeQuery = true)
+    Integer countApplyOne(Integer user);
+
+    /**
+     * 特定用户特定会议会议状态数量
+     * @param user 用户id
+     * @param status 是否通过（1通过 0驳回 -1取消）
+     * @return 特定用户特定会议会议状态数量
+     */
+    @Query(value = "select count(*) as value from conference c where c.user = ?1 and c.status = ?2", nativeQuery = true)
+    Integer countPassWhether(Integer user, Integer status);
 }

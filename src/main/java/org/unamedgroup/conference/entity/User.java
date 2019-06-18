@@ -4,7 +4,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User
@@ -29,6 +30,14 @@ public class User {
     private Integer userGroup;
     @Lob
     private String feature;
+
+    @Transient
+    public final static HashMap<Integer, String> USERGROUP = new HashMap<Integer, String>() {{
+        put(1, "普通用户");
+        put(2, "经理");
+        put(3, "后勤");
+        put(0, "系统管理员");
+    }};
 
     public User() {
     }
@@ -60,4 +69,5 @@ public class User {
         }
         return null;
     }
+
 }

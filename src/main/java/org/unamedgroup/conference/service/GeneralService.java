@@ -69,6 +69,6 @@ public interface GeneralService {
      *
      * @return 检查结果
      */
-    public Boolean checkUserGroup();
+    public Boolean isAdmin();
 
 }

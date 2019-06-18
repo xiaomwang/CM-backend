@@ -8,11 +8,10 @@ import org.unamedgroup.conference.dao.RoomRepository;
 import org.unamedgroup.conference.entity.Building;
 import org.unamedgroup.conference.entity.Conference;
 import org.unamedgroup.conference.entity.Room;
+import org.unamedgroup.conference.entity.temp.PageRoom;
+import org.unamedgroup.conference.entity.temp.PageRoomTime;
 import org.unamedgroup.conference.entity.temp.RoomTime;
-import org.unamedgroup.conference.service.GeneralService;
-import org.unamedgroup.conference.service.GuideQueryService;
-import org.unamedgroup.conference.service.QuickCheckService;
-import org.unamedgroup.conference.service.RelevanceQueryService;
+import org.unamedgroup.conference.service.*;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -28,7 +27,7 @@ import java.util.*;
  */
 
 @Component
-public class RoomServiceImpl implements QuickCheckService, GuideQueryService, RelevanceQueryService {
+public class RoomServiceImpl implements QuickCheckService, GuideQueryService, RelevanceQueryService, RoomManageService {
 
     @Autowired
     RoomRepository roomRepository;
@@ -43,6 +42,7 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     public List<Room> getRoomsByBuildingID(Integer buildingID) {
         List<Room> roomList = null;
         try {
+            // 根据楼宇ID得到楼宇，然后查询到该楼宇所有的房间
             Building building = buildingRepository.getBuildingByBuildingID(buildingID);
             roomList = roomRepository.getRoomsByBuilding(building);
             return roomList;
@@ -540,7 +540,143 @@ public class RoomServiceImpl implements QuickCheckService, GuideQueryService, Re
     }
 
     @Override
+    public Room locationShift(Room room) {
+        List<String> nums = new ArrayList<>();
+        nums.add("十");
+        nums.add("一");
+        nums.add("二");
+        nums.add("三");
+        nums.add("四");
+        nums.add("五");
+        nums.add("六");
+        nums.add("七");
+        nums.add("八");
+        nums.add("九");
+
+        String str = room.getLocation();
+        Integer num = -1;
+        try {
+            num = Integer.valueOf(str);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(num<0) {
+            return room;
+        }
+        if(num == 0) {
+            try {
+                throw new Exception("楼层为0，数据异常");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if(num > 99) {
+            try {
+                throw new Exception("层数过高，数据异常");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (num/10==0) {
+            str = nums.get(num);
+        } else if (num/10==1) {
+            if (num%10==0) {
+                str = "十";
+            }
+            else {
+                str = "十" + nums.get(num%10);
+            }
+        } else {
+            str = nums.get(num/10) + "十" + nums.get(num%10);
+        }
+        str = str+"层";
+        room.setLocation(str);
+        return room;
+    }
+
+    @Override
+    public List<String> getAllCatalogue() {
+        return roomRepository.findDistinctCatalogue();
+    }
+
+    @Override
+    public PageRoomTime pageRoomTimeList(List<RoomTime> roomTimeList, Integer pageCurrent, Integer pageSize) {
+        int start = (pageCurrent-1)*pageSize;
+        List<RoomTime> roomTimeListPage;
+        if(roomTimeList.isEmpty() || roomTimeList.size()<=start) {
+            roomTimeListPage = Collections.emptyList();
+        } else {
+            roomTimeListPage = new ArrayList<>();
+            int realSize = roomTimeList.size() - start > pageSize ? pageSize : roomTimeList.size() - start;
+            for(int i=0; i<realSize; i++) {
+                roomTimeListPage.add(roomTimeList.get(i+start));
+            }
+        }
+        return new PageRoomTime(roomTimeList.size(), roomTimeListPage);
+    }
+
+    @Override
     public List<Room> roomByBuilding(Building building) {
+        // 根据楼宇返回房间
         return roomRepository.getRoomsByBuilding(building);
+    }
+
+    @Override
+    public List<Room> getPageRoomInfo(Integer pageCurrent, Integer pageSize) {
+        return roomRepository.findRoomPage((pageCurrent-1)*pageSize, pageSize);
+    }
+
+    @Override
+    public Integer totalPageRomInfo() {
+        return roomRepository.countRoom();
+    }
+
+    @Override
+    public Integer deleteRoomByRoomID(Integer roomID) {
+        return roomRepository.deleteByRoomID(roomID);
+    }
+
+    @Override
+    public Room modifyRoom(Room room) {
+        return roomRepository.save(room);
+    }
+
+    @Override
+    public Set<Room> allFuzzyMatching(String params) {
+        Set<Room> roomSet = new HashSet<>();
+        String[] paramArr = params.split(" ");
+        int length = Math.min(5, paramArr.length);
+        for(int i=0; i<length; i++) {
+            String param = paramArr[i];
+            String paramStr = String.valueOf("%"+param+"%");
+            Integer paramInt;
+            try {
+                paramInt = Integer.valueOf(param);
+            } catch (NumberFormatException e) {
+                paramInt = -1;
+            }
+            Building building = new Building();
+            building.setBuildingID(paramInt);
+            List<Room> roomList = roomRepository.findByRoomIDOrCapacityOrCatalogueLikeOrLocationLikeOrNameLikeOrBuilding(paramInt, paramInt, paramStr, paramStr, paramStr, building);
+            roomSet.addAll(roomList);
+        }
+        return roomSet;
+    }
+
+    @Override
+    public PageRoom pageRoomSet(Set<Room> roomSet, Integer pageCurrent, Integer pageSize) {
+        List<Room> tempList = new ArrayList<>(roomSet);
+        int start = (pageCurrent-1)*pageSize;
+        Set<Room> roomSetPage;
+        if(roomSet.isEmpty() || roomSet.size()<=start) {
+            roomSetPage = Collections.emptySet();
+        } else {
+            roomSetPage = new HashSet<>();
+            int realSize = roomSet.size() - start > pageSize ? pageSize : roomSet.size() - start;
+            for(int i=0; i<realSize; i++) {
+                roomSetPage.add(tempList.get(i+start));
+            }
+        }
+        return new PageRoom(roomSet.size(), roomSetPage);
     }
 }

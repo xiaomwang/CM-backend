@@ -14,7 +14,6 @@ import org.unamedgroup.conference.entity.temp.UserInfo;
 import org.unamedgroup.conference.service.GeneralService;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -38,19 +37,24 @@ public class UserAdminController {
     GeneralService generalService;
 
     @ApiOperation(value = "列出所有用户")
-    @RequestMapping(value = "/listAllUsers", method = RequestMethod.GET)
+    @RequestMapping(value = "/allUsers", method = RequestMethod.GET)
     @ResponseBody
-    public Object listAllUsers() {
+    public Object listAllUsers(Integer pageNumber) {
         //登录有效性验证
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
-        } else if (generalService.checkUserGroup() == false) {
+        } else if (generalService.isAdmin() == false) {
             return new FailureInfo(-7);
         }
 
+        if (pageNumber < 1) {
+            return new FailureInfo(8007, "输入的页数非法");
+        } else {
+            pageNumber -= 1;
+        }
         try {
-            List<User> users = userRepository.findAll();
+            List<User> users = userRepository.findUsersByPage(pageNumber * 10);
             List<UserInfo> userList = new ArrayList<UserInfo>();
             for (int i = 0; i < users.size(); ++i) {
                 userList.add(new UserInfo(users.get(i)));
@@ -69,13 +73,16 @@ public class UserAdminController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
-        } else if (generalService.checkUserGroup() == false) {
+        } else if (generalService.isAdmin() == false) {
             return new FailureInfo(-7);
         }
 
         try {
             if (generalService.checkEmail(email) == false) {
                 return new FailureInfo(8001, "修改的用户邮箱格式非法。");
+            }
+            if (userRepository.getUserByEmail(email) != null) {
+                return new FailureInfo(8006, "邮箱已存在！");
             }
             User user = userRepository.getUserByUserID(userID);
             user.setEmail(email);
@@ -95,13 +102,16 @@ public class UserAdminController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated() == false) {
             return new FailureInfo();
-        } else if (generalService.checkUserGroup() == false) {
+        } else if (generalService.isAdmin() == false) {
             return new FailureInfo(-7);
         }
 
         try {
             if (generalService.checkMoiblePhone(phoneNumber) == false) {
                 return new FailureInfo(8003, "修改的用户手机号码格式非法。");
+            }
+            if (userRepository.getUserByPhoneNumber(phoneNumber) != null) {
+                return new FailureInfo(8007, " 手机已存在！");
             }
             User user = userRepository.getUserByUserID(userID);
             user.setPhoneNumber(phoneNumber);
@@ -112,4 +122,88 @@ public class UserAdminController {
             return new FailureInfo(8005, "用户手机更新遇到错误，请检查。");
         }
     }
+
+    @ApiOperation(value = "统计用户页数")
+    @RequestMapping(value = "/pageNumber", method = RequestMethod.GET)
+    @ResponseBody
+    public Object allNumbers() {
+        try {
+            Integer pageNumbers = userRepository.countUsers();
+            return new SuccessInfo(pageNumbers);
+        } catch (Exception e) {
+            System.err.println("统计用户数出错。");
+            System.err.println(e.toString());
+            return new FailureInfo(8006, "统计用户数出错。");
+        }
+    }
+
+    @ApiOperation(value = "用户基本信息变更（姓名、部门）")
+    @RequestMapping(value = "/basicInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public Object basicInfo(Integer userID, String realName, String department) {
+        //登录有效性验证
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        } else if (generalService.isAdmin() == false) {
+            return new FailureInfo(-7);
+        }
+
+        try {
+            User user = userRepository.getUserByUserID(userID);
+            user.setRealName(realName);
+            user.setDepartment(department);
+            userRepository.save(user);
+            return new SuccessInfo("用户基本信息更新成功！");
+        } catch (Exception e) {
+            return new FailureInfo(8007, "用户基本信息更新遇到错误，请检查。");
+        }
+
+    }
+
+    @ApiOperation(value = "获取所有的用户组")
+    @RequestMapping(value = "/userGroup", method = RequestMethod.GET)
+    @ResponseBody
+    public Object getUserGroup() {
+        try {
+            return new SuccessInfo(User.USERGROUP);
+        } catch (Exception e) {
+            return new FailureInfo(8008, "获取用户组失败。");
+        }
+
+    }
+
+
+    @ApiOperation(value = "修改密码")
+    @RequestMapping(value = "/password", method = RequestMethod.POST)
+    @ResponseBody
+    public Object changePassword(Integer userID, String newPassword) {
+        //登录有效性验证
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated() == false) {
+            return new FailureInfo();
+        } else if (generalService.isAdmin() == false) {
+            return new FailureInfo(-7);
+        }
+
+        // 通过是否是32位简单验证是否是MD5加密之后的结果
+        if (newPassword.length() != 32) {
+            return new FailureInfo(8009, "密码格式不正确。");
+        }
+
+        try {
+            // 获取当前登录用户
+            User user = userRepository.getUserByUserID(userID);
+            // 通过检验的话新密码加入数据库
+            user.setPassword(User.getPasswordHash(newPassword));
+            userRepository.save(user);
+            return new SuccessInfo("密码修改成功！");
+        } catch (Exception e) {
+            System.err.println("密码修改失败！");
+            System.err.println(e.toString());
+            return new FailureInfo(8010, "密码修改遇到未知错误。");
+        }
+    }
+
+
 }

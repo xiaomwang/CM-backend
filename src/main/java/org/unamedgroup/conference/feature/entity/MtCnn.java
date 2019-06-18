@@ -3,14 +3,19 @@ package org.unamedgroup.conference.feature.entity;
 
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
 import org.tensorflow.Graph;
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 import org.tensorflow.Tensors;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Vector;
 
 import java.io.IOException;
@@ -51,7 +56,10 @@ public class MtCnn {
         Graph graph = new Graph();
         byte[] graphDef;
         try {
-            graphDef = IOUtils.toByteArray(new FileInputStream(PD_PATH));
+            Resource resource = new ClassPathResource("models/FaceDetect.pb");
+            InputStream is = resource.getInputStream();
+            graphDef = IOUtils.toByteArray(is);
+//            graphDef = IOUtils.toByteArray(new FileInputStream(PD_PATH));
             graph.importGraphDef(graphDef);
             session = new Session(graph);
         } catch (IOException e) {
