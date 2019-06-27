@@ -1,5 +1,7 @@
 package org.unamedgroup.conference.service;
 
+import java.net.HttpURLConnection;
+
 /**
  * 设备控制相关接口业务逻辑处理器
  *
@@ -15,4 +17,11 @@ public interface DevicesControlService {
      * @return 开门结果
      */
     public Boolean openDoor(Integer userID);
+
+    /**
+     * 用户调用此方法，中控向设备控制器发送红外信号
+     *
+     * @return 红外请求结果
+     */
+    public Boolean openAirCondition();
 }

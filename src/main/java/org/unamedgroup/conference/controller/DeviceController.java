@@ -48,7 +48,11 @@ public class DeviceController {
     @RequestMapping(value = "/airCondition", method = RequestMethod.POST)
     @ResponseBody
     public Object airCondition() {
-        return null;
+        if (devicesControl.openAirCondition() == true) {
+            return new SuccessInfo(true);
+        } else {
+            return new FailureInfo(4001, "发送红外信号失败，请重试！");
+        }
     }
 
     @ApiOperation(value = "开启投影仪")
