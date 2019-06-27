@@ -24,7 +24,7 @@ public class Room implements Serializable {
     private Integer capacity;
     private String catalogue;
     private Integer flag;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "building", referencedColumnName = "buildingid")
     private Building building;
 }

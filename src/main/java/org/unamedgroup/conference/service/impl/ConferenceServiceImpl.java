@@ -54,6 +54,17 @@ public class ConferenceServiceImpl implements MyConferenceService, ConferenceMan
     }
 
     @Override
+    public List<Conference> getPageConferenceList(Integer pageCurrent, Integer pageSize) {
+        List<Conference> conferenceList = conferenceRepository.findPageConference((pageCurrent-1)*pageSize, pageSize);
+        return conferenceList;
+    }
+
+    @Override
+    public Integer getPageConferenceTotal() {
+        return conferenceRepository.countPageConference();
+    }
+
+    @Override
     public Integer getMyConferenceTotal(int userId) {
         List<Integer> participants = participantsRepository.findSequenceIDByUserID(userId);
         if(participants.size()==0) {
